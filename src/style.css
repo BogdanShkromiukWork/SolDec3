@@ -2,12 +2,15 @@ body {
   margin: 0;
   padding: 0;
 }
-.main_field {
+#main_field {
+  position: relative;
   width: 100vw;
-  height: 90vh;
+  height: 220vh;
   background-color: green;
 }
 #test_insert_button {
   width: 100vw;
   height: 10vh;
+}
+.function_field {
 }
