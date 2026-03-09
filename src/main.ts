@@ -12,7 +12,7 @@ test_insert_button_const.addEventListener('click', () => {
 main_field_const.addEventListener('click', (event) => {
   if (insertMode) {
     const mathfield = new MathfieldElement();
-    // mathfield.classList.add('function_field');
+    mathfield.classList.add('function_field');
     const Xcoordinate = event.offsetX;
     const Ycoordinate = event.offsetY;
     mathfield.style.position = 'absolute';
@@ -21,20 +21,14 @@ main_field_const.addEventListener('click', (event) => {
     main_field_const.appendChild(mathfield);
     mathfield.focus();
     insertMode = false;
-  //   main_field_const.style.cursor = 'default';
-  //   mathfield.addEventListener('mousedown', (move_event) => {
-  //   if (move_event.ctrlKey) {
-  //     isDragging = true;
-  //   }});
-  //   mathfield.addEventListener('mousemove', (move_event) => {
-  //     if (isDragging) {
-  //       const newXcoordinate = move_event.offsetX;
-  //       const newYcoordinate = move_event.offsetY
-  //       mathfield.style.left = `${newXcoordinate}px`;
-  //       mathfield.style.top = `${newYcoordinate}px`;
-  // }});
-  //   mathfield.addEventListener('mouseup', (move_event) => {
-  //     if (move_event.ctrlKey) {
-  //       isDragging = false;
-  //     }});
 }});
+// function_field.addEventListener('mousedown', () => {
+//   if (CtrllKey) {
+//     isDragging = true;
+//   alert('dragging started');
+// }});
+// function_field.addEventListener('mouseup', () => {
+//   if (CtrllKey) {
+//     isDragging = false;
+//   alert('dragging stopped');
+// }});

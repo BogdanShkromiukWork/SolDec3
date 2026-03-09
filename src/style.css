@@ -2,6 +2,124 @@ body {
   margin: 0;
   padding: 0;
 }
+                                      /* Main panels start */
+        /* Top */
+/* Left */
+#left_top_control_panel_back {
+  position :absolute;
+  top: 0;
+  left: 0;
+  width: 30vw;
+  height: 20vh;
+  background-color: #ebebeb;
+}
+.left_top_control_panel_main_grid_back {
+  display: block;
+  top: 0;
+  left: 0;
+  height: calc(100%/3);
+  width: 100%;
+  background-color: none;
+}
+.left_top_control_panel_main_grid {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(1, 1fr);
+  place-items: center;
+}
+.left_top_control_panel_secondary_grid_back {
+  display: block;
+  top: 0;
+  left: 0;
+  height: calc(100%/3*2);
+  width: 100%;
+  background-color: none;
+}
+.left_top_control_panel_secondary_grid {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  place-items: center;
+}
+/* Right */
+#right_top_control_panel_back {
+  position :absolute;
+  top: 0;
+  right: 0;
+  width: 30vw;
+  height: 20vh;
+  background-color: #ebebeb;
+}
+.right_top_control_panel_main_grid_back {
+  display: block;
+  top: 0;
+  left: 0;
+  height: calc(100%/3);
+  width: 100%;
+  background-color: none;
+}
+.right_top_control_panel_main_grid {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(1, 1fr);
+  place-items: center;
+}
+.right_top_control_panel_secondary_grid_back {
+  display: block;
+  top: 0;
+  left: 0;
+  height: calc(100%/3*2);
+  width: 100%;
+  background-color: none;
+}
+.right_top_control_panel_secondary_grid {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  place-items: center;
+}
+        /* Bottom */
+.left_bottom_control_panel_back {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 15vw;
+  height: 80vh;
+  background-color: #ebebeb;
+}
+.right_bottom_control_panel_back {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 15vw;
+  height: 80vh;
+  background-color: #ebebeb;
+}
+                                      /* Main panels end */
+.button_common1 {
+  width: 90%;
+  height: 90%;
+  background-color: #bababa;
+  border: solid 5px black;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.button_common1:active {
+  background-color: #858585;
+  scale : 0.95;
+}
+
+
+
+
 #main_field {
   position: relative;
   width: 100vw;
@@ -13,4 +131,7 @@ body {
   height: 10vh;
 }
 .function_field {
+}
+.ML__toggles{
+  display: none;
 }
