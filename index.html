@@ -7,6 +7,7 @@
     <script type="module" src="/src/main.ts"></script>
     <script type="module" src="/src/front.ts"></script>
     <script type="module" src="/src/main_field.ts"></script>
+    <script type="module" src="/src/math_field.ts"></script>
     <link rel="stylesheet" href="/src/style.css" />
     <title>soldec3</title>
   </head>
@@ -21,8 +22,8 @@
       </div>
       <div class="left_top_control_panel_secondary_grid_back">
         <div class="left_top_control_panel_secondary_grid">
-          <button class="button_common1" id="slide_add">add</button>
-          <button class="button_common1" id="slide_remove">rem</button>   
+          <button class="button_common1" id="slide_add_btn">add</button>
+          <button class="button_common1" id="slide_remove_btn">rem</button>   
         </div>
       </div>
     </div>
@@ -33,6 +34,7 @@
           <button class="button_common1" id="functions_panel_btn">func</button>   
           <button class="button_common1" id="simplification_panel_btn">simple</button>
           <button class="button_common1" id="drawing_panel_btn">draw</button>
+          <button class="button_common1" id="text_panel_btn">text</button>
         </div>
       </div>
 
@@ -60,18 +62,25 @@
         </div>
       </div>
 
+      <div class="right_top_control_panel_secondary_grid_back" id = "text_top_panel">
+        <div class="right_top_control_panel_secondary_grid">
+          <button class="button_common1">T</button>   
+        </div>
+      </div>
 
     </div>
 
-    <div id = "center_top_control_panel_back" style="display: none;">
+    <div id="center_top_control_panel_back" style="display: none;">
     </div>
 
     <div class="left_bottom_control_panel_back">
 
     </div>
 
-    <div class="right_bottom_control_panel_back" style="display: none;">
-      hgdjk
+    <div class="right_bottom_control_panel_back" id="finctions_bottom_panel_back">
+      <div id="insert_mathfield_btn_back">
+        <button class="button_common1" id="insert_mathfield_btn">insert mathfield</button>
+      </div>
     </div>
     <div class="right_bottom_control_panel_back" style="display: none;">
       hgdjk

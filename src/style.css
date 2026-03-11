@@ -111,6 +111,9 @@ body {
   height: 80vh;
   background-color: #ebebeb;
 }
+#finctions_bottom_panel_back{
+  display: none;
+}
                                       /* Main panels end */
                                       /* Buttons start */
 .button_common1 {
@@ -125,11 +128,18 @@ body {
   background-color: #858585;
   scale : 0.95;
 }
-#slide_remove {
+#slide_remove_btn {
   grid-column: 1;
 }
-#slide_add {
+#slide_add_btn {
   grid-column: 1;
+}
+#insert_mathfield_btn_back{
+  width: 100%;
+  height: calc(20vh/3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
                                       /* Buttons end */
                                       /* Secondary main panels start */
@@ -145,7 +155,9 @@ body {
 #home_top_panel {
   display: none;
 }
-
+#text_top_panel {
+  display: none;
+}
                                       /* Secondary main panels end */
                                       /* Main field start */
 #back_main_field {
