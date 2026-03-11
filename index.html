@@ -5,6 +5,8 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script type="module" src="/src/main.ts"></script>
+    <script type="module" src="/src/front.ts"></script>
+    <script type="module" src="/src/main_field.ts"></script>
     <link rel="stylesheet" href="/src/style.css" />
     <title>soldec3</title>
   </head>
@@ -14,37 +16,71 @@
     <div id="left_top_control_panel_back">
       <div class="left_top_control_panel_main_grid_back">
         <div class="left_top_control_panel_main_grid">
-          <button class="button_common1"></button>   
+          <button class="button_common1">Slpn</button>   
         </div>
       </div>
       <div class="left_top_control_panel_secondary_grid_back">
         <div class="left_top_control_panel_secondary_grid">
-          <button class="button_common1"></button>   
+          <button class="button_common1" id="slide_add">add</button>
+          <button class="button_common1" id="slide_remove">rem</button>   
         </div>
       </div>
     </div>
-
     <div id="right_top_control_panel_back">
       <div class="right_top_control_panel_main_grid_back">
         <div class="right_top_control_panel_main_grid">
-          <button class="button_common1" id="home_btn"></button>   
-          <button class="button_common1" id="functions_panel_btn"></button>   
-        </div>
-      </div>   
-      <div class="right_top_control_panel_secondary_grid_back">
-        <div class="right_top_control_panel_secondary_grid">
-          <button class="button_common1"></button>   
+          <button class="button_common1" id="home_panel_btn">home</button>   
+          <button class="button_common1" id="functions_panel_btn">func</button>   
+          <button class="button_common1" id="simplification_panel_btn">simple</button>
+          <button class="button_common1" id="drawing_panel_btn">draw</button>
         </div>
       </div>
+
+      <div class="right_top_control_panel_secondary_grid_back" id = "functions_top_panel">
+        <div class="right_top_control_panel_secondary_grid">
+          <button class="button_common1">F</button>   
+        </div>
+      </div>
+
+      <div class="right_top_control_panel_secondary_grid_back" id = "simplification_top_panel">
+        <div class="right_top_control_panel_secondary_grid">
+          <button class="button_common1">S</button>   
+        </div>
+      </div>
+
+      <div class="right_top_control_panel_secondary_grid_back" id = "drawing_top_panel">
+        <div class="right_top_control_panel_secondary_grid">
+          <button class="button_common1">D</button>   
+        </div>
+      </div>
+
+      <div class="right_top_control_panel_secondary_grid_back" id = "home_top_panel">
+        <div class="right_top_control_panel_secondary_grid">
+          <button class="button_common1">H</button>   
+        </div>
+      </div>
+
+
     </div>
 
+    <div id = "center_top_control_panel_back" style="display: none;">
+    </div>
 
     <div class="left_bottom_control_panel_back">
 
     </div>
 
-    <div class="right_bottom_control_panel_back">
+    <div class="right_bottom_control_panel_back" style="display: none;">
+      hgdjk
+    </div>
+    <div class="right_bottom_control_panel_back" style="display: none;">
+      hgdjk
+    </div>
 
+    <div id="back_main_field">
+      <div class="main_field">
+
+      </div>
     </div>
     <!-- </div>
     <div id="main_field" editable="true">

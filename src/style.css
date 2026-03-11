@@ -1,7 +1,15 @@
 body {
   margin: 0;
   padding: 0;
+  overscroll-behavior: none;
 }
+* {
+  overscroll-behavior: none;
+}
+.back_main_field {
+  overscroll-behavior: none;
+}
+/* * {overscroll-behavior: none}; */
                                       /* Main panels start */
         /* Top */
 /* Left */
@@ -104,6 +112,7 @@ body {
   background-color: #ebebeb;
 }
                                       /* Main panels end */
+                                      /* Buttons start */
 .button_common1 {
   width: 90%;
   height: 90%;
@@ -116,11 +125,55 @@ body {
   background-color: #858585;
   scale : 0.95;
 }
+#slide_remove {
+  grid-column: 1;
+}
+#slide_add {
+  grid-column: 1;
+}
+                                      /* Buttons end */
+                                      /* Secondary main panels start */
+#functions_top_panel {
+  display: none;
+}
+#simplification_top_panel {
+  display: none;
+}
+#drawing_top_panel {
+  display: none;
+}
+#home_top_panel {
+  display: none;
+}
 
-
-
-
-#main_field {
+                                      /* Secondary main panels end */
+                                      /* Main field start */
+#back_main_field {
+  position: absolute;
+  top: 20vh;
+  left: 15vw;
+  width: 70vw;
+  height: 70vh;
+  background-color: #F0EDED;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  overflow-y: auto;
+  padding-bottom: 5vh;
+  padding-top: 5vh;
+  gap: 5vh;
+  justify-self: flex-start;
+}
+.main_field {
+  flex-shrink: 0;
+  width: calc(595px + 5px);
+  height: calc(842px + 5px);
+  background-color: white;
+  border: solid 5px #BAB6B6;
+  overscroll-behavior: none;
+}
+                                      /* Main field end  */
+/* #main_field {
   position: relative;
   width: 100vw;
   height: 220vh;
@@ -134,4 +187,4 @@ body {
 }
 .ML__toggles{
   display: none;
-}
+} */
