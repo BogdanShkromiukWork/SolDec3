@@ -183,8 +183,24 @@ body {
   background-color: white;
   border: solid 5px #BAB6B6;
   overscroll-behavior: none;
+  position: relative;
 }
                                       /* Main field end  */
+                                      /* Intercept mode start */
+.intercept_mode_self_on{
+  pointer-events: auto !important;
+}
+.intercept_mode_self_off{
+  pointer-events: none !important;
+}
+.intercept_mode_child_on * {
+  pointer-events: auto !important;
+}
+.intercept_mode_child_off * {
+  pointer-events: none !important;
+}
+                                      /* Intercept mode end */
+
 /* #main_field {
   position: relative;
   width: 100vw;
