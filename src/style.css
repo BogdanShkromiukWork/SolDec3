@@ -111,7 +111,7 @@ body {
   height: 80vh;
   background-color: #ebebeb;
 }
-#finctions_bottom_panel_back{
+#functions_bottom_panel_back{
   display: none;
 }
                                       /* Main panels end */
@@ -134,7 +134,7 @@ body {
 #slide_add_btn {
   grid-column: 1;
 }
-#insert_mathfield_btn_back{
+.insert_remove_mathfield_btn_back{
   width: 100%;
   height: calc(20vh/3);
   display: flex;

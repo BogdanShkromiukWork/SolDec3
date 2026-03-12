@@ -56,6 +56,7 @@ function slides_removeMode_off(){
     });
     slide_removeMode = false;
     slidesToRemove.length = 0;
+    slide_remove_btn_const.style.backgroundColor = "#bababa";
 }
                         // Add/remove slide btns functions end
                         // Add/remove mathfield btns functions start
@@ -81,6 +82,7 @@ function mathfield_insert_mode_off (){
         style_default_cursor(slide)
         slide.classList.remove('intercept_mode_child_off');
     });
+    insert_mathfield_btn.style.backgroundColor = "#bababa";
 };
                         // Add/remove mathfield btns functions end
                         // Add slide btn start
@@ -125,9 +127,11 @@ slide_remove_btn_const.addEventListener('click', () => {
     });
     if (!slide_removeMode){
         slide_removeMode = true;
+        slide_remove_btn_const.style.backgroundColor = "#858585";
     } else {
         slide_removeMode = false;
         slides_remove()
+        slide_remove_btn_const.style.backgroundColor = "#bababa";
     }
 });
                         // Remove slide btn end
@@ -141,6 +145,7 @@ insert_mathfield_btn.addEventListener('click', ()=>{
             const add_mathfield_const1 = add_mathfield.bind(null, slide);
             mathfield_slide_insert_controllers.set(slide, add_mathfield_const1)
             slide.addEventListener('click', add_mathfield_const1);
+            insert_mathfield_btn.style.backgroundColor = "#858585";
         }
     });
     if (!insert_mode_mathfield) {
