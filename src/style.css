@@ -12,7 +12,7 @@ body {
 /* * {overscroll-behavior: none}; */
                                       /* Main panels start */
         /* Top */
-/* Left */
+        /* Left */
 #left_top_control_panel_back {
   position :absolute;
   top: 0;
@@ -53,7 +53,7 @@ body {
   grid-template-rows: repeat(2, 1fr);
   place-items: center;
 }
-/* Right */
+        /* Right */
 #right_top_control_panel_back {
   position :absolute;
   top: 0;
@@ -114,6 +114,9 @@ body {
 #functions_bottom_panel_back{
   display: none;
 }
+#text_bottom_panel_back{
+  display: none;
+}
                                       /* Main panels end */
                                       /* Buttons start */
 .button_common1 {
@@ -134,7 +137,7 @@ body {
 #slide_add_btn {
   grid-column: 1;
 }
-.insert_remove_mathfield_btn_back{
+.insert_remove_change_field_btn_back{
   width: 100%;
   height: calc(20vh/3);
   display: flex;
@@ -200,19 +203,30 @@ body {
   pointer-events: none !important;
 }
                                       /* Intercept mode end */
-
-/* #main_field {
-  position: relative;
-  width: 100vw;
-  height: 220vh;
-  background-color: green;
+                                      /* Context menu start */
+.contex_menu_common_btn {
+  height: 3vh;
+  width: 10vw;
+  background-color: FAFAFA;
 }
-#test_insert_button {
-  width: 100vw;
-  height: 10vh;
+.contex_menu_common_btn :active {
+  scale: 0.98;
 }
-.function_field {
+.contex_menu_common_btn :hover {
+  background-color: #858585;
 }
-.ML__toggles{
+#context_menu_mathfield {
+  padding: 0;
+  margin: 0;
+  position: absolute;
   display: none;
-} */
+  flex-direction: column;
+}
+
+                                      /* Context menu end */
+                                      /* Content fields start */
+.mathfield_default {
+  min-width: 150px;
+  display: inline-block;
+}
+                                      /* Constnt fields end */
