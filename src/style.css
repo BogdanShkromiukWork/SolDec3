@@ -221,12 +221,30 @@ body {
   position: absolute;
   display: none;
   flex-direction: column;
+  z-index: 1000;
 }
-
+#context_menu_textfield {
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  display: none;
+  flex-direction: column;
+  z-index: 1000;
+}
                                       /* Context menu end */
                                       /* Content fields start */
 .mathfield_default {
   min-width: 150px;
   display: inline-block;
+}
+.mathfield_default::part(virtual-keyboard-toggle) {
+  display: none !important;
+  visibility: hidden;
+  width: 0;
+}
+.mathfield_default::part(menu-toggle) {
+  display: none !important;
+  visibility: hidden;
+  width: 0;
 }
                                       /* Constnt fields end */

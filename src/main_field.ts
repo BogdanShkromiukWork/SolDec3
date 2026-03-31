@@ -1,3 +1,6 @@
+// setTimeout(() => {
+//     alert('test');
+// }, 0);
                         // Conetxt menu constants start
 const context_menu_mathfield_const = document.getElementById('context_menu_mathfield') as HTMLDivElement;
 let current_element: any = null;
@@ -13,8 +16,7 @@ const all_slides: HTMLDivElement[] = Array.from(document.querySelectorAll('.main
 let slide_removeMode = false;
 let slidesToRemove: HTMLDivElement[] = [];
                         // Add/remove slide btns constants end
-                        // Add/remove mathfield btns constants start
-//.
+                        // Add/remove/move mathfield btns constants start
 import 'mathlive';
 import {MathfieldElement} from 'mathlive';
 const insert_mathfield_btn = document.getElementById('insert_mathfield_btn') as HTMLButtonElement;
@@ -27,11 +29,39 @@ let Y_coordinate_slide_click: number | null;    //Universe
 const mathfield_remove_btn_const = document.getElementById('mathfield_remove_btn') as HTMLButtonElement;
 let mathfield_to_remove: MathfieldElement | null = null;
 const mathfield_move_btn_const = document.getElementById('mathfield_move_btn') as HTMLButtonElement;
-                        // Add/remove mathfield btns constants end
+                        // Add/remove/move mathfield btns constants end
+                        // Add/remove/move textfield btns constants end
+//
+const insert_textfield_btn_const = document.getElementById('insert_textfield_btn') as HTMLButtonElement;
+const context_menu_textfield_const = document.getElementById('context_menu_textfield') as HTMLDivElement;
+const textfields: HTMLParagraphElement [] = [];
+const textfield_insert_controllers = new Map ();
+let mousedown_slide: HTMLDivElement | null = null;
+let mouseup_slide: HTMLDivElement | null = null;
+let X_mousedown: number | null = null;
+let Y_mousedown: number | null = null;
+let X_mouseup: number | null = null;
+let Y_mouseup: number | null = null;
+let textfield_insert_mode = false;
+const remove_textfield_btn_const = document.getElementById('textfield_remove_btn') as HTMLButtonElement;
+const move_textfield_btn_const = document.getElementById('textfield_move_btn') as HTMLButtonElement;
+let mousedown_test: boolean = false;
+let mousedown_marker: HTMLDivElement | null = null;
+                        // Add/remove/move textfield btns constants end
                         // Context menus functions start
 //.
                         // Context menus functions end
-                        // Add/remove/move slide btns functions start
+
+
+
+
+
+
+
+
+
+
+                        // Add/remove slide btns functions start
 function style_not_allowed_cursor (slide_cursor_change: HTMLDivElement){
     slide_cursor_change.style.cursor = "not-allowed"
 }
@@ -79,7 +109,9 @@ function slides_removeMode_off(){
     slidesToRemove.length = 0;
     slide_remove_btn_const.style.backgroundColor = "#bababa";
 }
-                        // Add/remove/move slide btns functions end
+                        // Add/remove slide btns functions end
+
+
                         // Move field functions start
 function move_element_to(){
     element_to_move.style.left = `${X_coordinate_slide_click}px`
@@ -91,6 +123,7 @@ function move_element_to(){
             style_default_cursor(slide);
             element_move_mode = false;
             move_element_btn_const.style.backgroundColor = '#bababa';
+            slide.classList.remove('intercept_mode_child_off');
         });
     }
 };
@@ -99,12 +132,15 @@ function element_move_mode_off(){
     if(element_move_mode){
         all_slides.forEach((slide) =>{
             style_default_cursor(slide)
+            slide.classList.remove('intercept_mode_child_off');
         });
     };
     element_move_mode = false;
     move_element_btn_const.style.backgroundColor = '#bababa';
 };
                         // Move field functions end
+
+
                         // Add/remove/move mathfield btns functions start
 function style_crosshair_cursor (slide_cursor_change: any){
     slide_cursor_change.style.cursor = "crosshair"
@@ -114,25 +150,28 @@ function add_mathfield (slide: HTMLDivElement){
     new_mathfield.style.position='absolute';
     new_mathfield.style.left = `${X_coordinate_slide_click}px`;
     new_mathfield.style.top = `${Y_coordinate_slide_click}px`;
-    slide.appendChild(new_mathfield);
     mathfields.push(new_mathfield)
     insert_mode_mathfield = false;
     new_mathfield.addEventListener('contextmenu', (context_menu_click) => {
+        context_menu_click.stopPropagation();
         context_menu_click.preventDefault();
         context_menu_mathfield_const.style.display = 'flex';
         context_menu_mathfield_const.style.left = `${context_menu_click.pageX}px`;
         context_menu_mathfield_const.style.top = `${context_menu_click.pageY}px`;
         current_element = new_mathfield
     });
-    new_mathfield.addEventListener('click', () =>{
+    new_mathfield.addEventListener('click', (event: MouseEvent) =>{
+        event.stopPropagation();
         current_element = new_mathfield
         if (element_move_mode){
             element_to_move = current_element
             all_slides.forEach((slide) =>{
                 style_crosshair_cursor(slide);
             });
+
         };
     });
+    slide.appendChild(new_mathfield);
     new_mathfield.classList.add('mathfield_default')
     new_mathfield.focus();
     mathfield_insert_mode_off()
@@ -149,14 +188,104 @@ function mathfield_insert_mode_off (){
 };
 
                         // Add/remove/move mathfield btns functions end
-                        // Window functions start
+                        // Add/remove/move textfield btns functions start
+function textfield_insert(){
+    if (mousedown_slide === mouseup_slide && mousedown_slide !== null && textfield_insert_mode){
+        const new_textfield = document.createElement('p');
+        new_textfield.contentEditable = "true";
+        new_textfield.style.position='absolute';
+        new_textfield.style.border = "1px solid black";
+        const X_textfield = Math.min(X_mousedown!, X_mouseup!) - 5;
+        const Y_textfield = Math.min(Y_mousedown!, Y_mouseup!) - 5;
+        const width_textfield = Math.abs(X_mousedown! - X_mouseup!) + 5;
+        const height_textfield = Math.abs(Y_mousedown! - Y_mouseup!) + 5;
+        new_textfield.style.width = `${width_textfield}px`;
+        new_textfield.style.height = `${height_textfield}px`;
+        new_textfield.style.left = `${X_textfield}px`;
+        new_textfield.style.top = `${Y_textfield}px`;
+        mousedown_slide.appendChild(new_textfield);
+        new_textfield.focus();
+        new_textfield.addEventListener('click', (event: MouseEvent) =>{
+            current_element = new_textfield
+            event.stopPropagation();
+            if (element_move_mode){
+                element_to_move = current_element
+                all_slides.forEach((slide) =>{
+                    style_crosshair_cursor(slide);
+                });
+            };
+        });
+        new_textfield.addEventListener('contextmenu', (context_menu_click) => {
+            context_menu_click.stopPropagation();
+            context_menu_click.preventDefault();
+            context_menu_textfield_const.style.display = 'flex';
+            context_menu_textfield_const.style.left = `${context_menu_click.pageX}px`;
+            context_menu_textfield_const.style.top = `${context_menu_click.pageY}px`;
+            current_element = new_textfield
+        }, true);
+        textfields.push(new_textfield)
+        textfield_insert_mode = false;
+        textfield_insert_mode_off();
+    };
+};
+function textfield_insert_mode_off() {
+    all_slides.forEach((slide) =>{
+        const textfield_insert_const = textfield_insert_controllers.get(slide)
+        if (textfield_insert_const !== undefined) {
+            slide.removeEventListener('mouseup', textfield_insert_const)
+        }
+        style_default_cursor(slide)
+        slide.classList.remove('intercept_mode_child_off');
+    });
+    textfield_insert_mode = false;
+    insert_textfield_btn_const.style.backgroundColor = "#bababa";
+};
+                        // Add/remove/move textfield btns functions end
+
+
+
+
+
+
+
+
+
+
+                        // Window lidtener start
 window.addEventListener('click', (window_click) =>{
     if (!context_menu_mathfield_const.contains(window_click.target as Node)) {
         context_menu_mathfield_const.style.display = 'none';
         mathfield_to_remove = null;
     };
+    if (!context_menu_textfield_const.contains(window_click.target as Node)) {
+        context_menu_textfield_const.style.display = 'none';
+    };
 });
-                        // Window functions end
+window.addEventListener('mouseup', (window_mouseup) =>{
+    all_slides.forEach(slide =>{
+        if (!slide.contains(window_mouseup.target as Node)){
+            textfield_insert_mode_off();
+            mousedown_test = false;
+        }
+    });
+});
+document.addEventListener('contextmenu', (e: MouseEvent) => {
+  const target = e.target as HTMLElement;
+  if (target && target.closest('math-field')) {
+    e.preventDefault();
+  }
+}, true);
+                        // Window listener end
+
+
+
+
+
+
+
+
+
+
                         // Add slide btn start
 all_slides.forEach(slide =>{
     slide.addEventListener('click', (event) =>{
@@ -167,10 +296,23 @@ all_slides.forEach(slide =>{
             move_element_to()
         };
     });
-})
+    slide.addEventListener('mousedown', (event) =>{
+        X_mousedown = event.offsetX
+        Y_mousedown = event.offsetY
+        mousedown_slide = slide;
+        mousedown_test = true;
+    });
+    slide.addEventListener('mouseup', (event) =>{
+        X_mouseup = event.offsetX
+        Y_mouseup = event.offsetY
+        mouseup_slide = slide;
+        mousedown_test = false;
+    });
+});
 slide_add_btn_const.addEventListener('click', () => {
     slides_removeMode_off();
     element_move_mode_off();
+    textfield_insert_mode_off();
     insert_mode_mathfield = false
     const slide = document.createElement('div');
     slide.classList.add('main_field');
@@ -182,16 +324,29 @@ slide_add_btn_const.addEventListener('click', () => {
             move_element_to()
         };
     });
+    slide.addEventListener('mousedown', (event) =>{
+        X_mousedown = event.offsetX
+        Y_mousedown = event.offsetY
+        mousedown_slide = slide;
+    });
+    slide.addEventListener('mouseup', (event) =>{
+        X_mouseup = event.offsetX
+        Y_mouseup = event.offsetY
+        mouseup_slide = slide;
+    });
     const main_field_const = document.getElementById('back_main_field') as HTMLDivElement;
     main_field_const.appendChild(slide);
     all_slides.push(slide);
     mathfield_insert_mode_off()
 });
                         // Add slide btn end
+
+
                         // Remove slide btn start
 slide_remove_btn_const.addEventListener('click', () => {
     mathfield_insert_mode_off()
     element_move_mode_off()
+    textfield_insert_mode_off()
     insert_mode_mathfield = false
     all_slides.forEach(slide => {
         style_not_allowed_cursor(slide)
@@ -217,6 +372,8 @@ slide_remove_btn_const.addEventListener('click', () => {
     }
 });
                         // Remove slide btn end
+
+
                         // Move mode start
 move_element_btn_const.addEventListener('click', ()=>{
     if (!element_move_mode){
@@ -232,8 +389,11 @@ move_element_btn_const.addEventListener('click', ()=>{
     };
 });
                         // Move mode end
+
+
                         // Add mathfield btn start
 insert_mathfield_btn.addEventListener('click', ()=>{
+    textfield_insert_mode_off();
     slides_removeMode_off();
     element_move_mode_off();
     all_slides.forEach(slide =>{
@@ -253,6 +413,8 @@ insert_mathfield_btn.addEventListener('click', ()=>{
     }
 });
                         // Add mathfield btn end
+
+
                         // Remove mathfield btn start
 mathfield_remove_btn_const.addEventListener('click', ()=>{
     mathfield_to_remove = current_element;
@@ -266,6 +428,8 @@ mathfield_remove_btn_const.addEventListener('click', ()=>{
     };
 });
                         // Remove mathfield btn end
+
+
                         // Mathfield move btn start
 mathfield_move_btn_const.addEventListener('click', ()=>{
     if (!element_move_mode){
@@ -281,3 +445,52 @@ mathfield_move_btn_const.addEventListener('click', ()=>{
     context_menu_mathfield_const.style.display = 'none';
 });
                         // Mathfield move btn end
+
+
+                        // Add textfield start
+insert_textfield_btn_const.addEventListener('click', ()=>{
+    element_move_mode_off();
+    slides_removeMode_off();
+    mathfield_insert_mode_off();
+    all_slides.forEach((slide) =>{
+        if (!textfield_insert_mode) {
+            style_crosshair_cursor(slide)
+            slide.classList.add('intercept_mode_child_off');
+            const textfield_insert_const = textfield_insert.bind(null)
+            textfield_insert_controllers.set(slide, textfield_insert_const)
+            slide.addEventListener('mouseup', textfield_insert_const);
+            insert_textfield_btn_const.style.backgroundColor = "#858585";
+        };
+    });
+    if (!textfield_insert_mode){
+        textfield_insert_mode = true;
+    } else {
+        textfield_insert_mode_off();
+    };
+});
+                        // Add textfield end
+                        // Remove textfield start
+remove_textfield_btn_const.addEventListener('click', () => {
+    const textfield_to_remove = current_element;
+    if (textfield_to_remove !== null){
+        textfield_to_remove.remove();
+        const textfield_to_remove_index = textfields.indexOf(textfield_to_remove)
+        textfields.splice(textfield_to_remove_index, 1)
+        context_menu_textfield_const.style.display = 'none';
+    };
+});
+                        // Remove textfield end
+                        // Move textfield start
+move_textfield_btn_const.addEventListener('click', () => {
+    if (!element_move_mode){
+        element_to_move = current_element;
+        all_slides.forEach((slide) => {
+            style_crosshair_cursor(slide)
+            slide.classList.add('intercept_mode_child_off');
+    });};
+    element_move_mode = true;
+    move_element_btn_const.style.backgroundColor = '#858585';
+    context_menu_textfield_const.style.display = 'none';
+});
+                        // Move textfield end
+//
