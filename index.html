@@ -8,6 +8,8 @@
     <script type="module" src="/src/front.ts"></script>
     <script type="module" src="/src/main_field.ts"></script>
     <script type="module" src="/src/math_field.ts"></script>
+    <script type="module" src="/src/latex_functions_insert.ts"></script>
+    <script type="module" src="/src/latex_style_render.ts"></script>
     <link rel="stylesheet" href="/src/style.css" />
     <title>soldec3</title>
   </head>
@@ -81,6 +83,12 @@
       <div class="insert_remove_change_field_btn_back">
         <button class="button_common1" id="insert_mathfield_btn">insert mathfield</button>
       </div>
+      <div class="latex_insert_panel_back">
+        <p class="latex_insert_panel_title">Fractions</p>
+        <div class="latex_insert_buttons_grid">
+          <button class="button_common1" id="fraction_button"></button>
+        </div>
+      </div>
     </div>
     <div class="right_bottom_control_panel_back" id="text_bottom_panel_back">
       <div class="insert_remove_change_field_btn_back">
@@ -93,12 +101,13 @@
       </div>
     </div>
     <div id="context_menu_mathfield">
-      <button class="contex_menu_common_btn" id="mathfield_remove_btn">remove mathfield</button>
       <button class="contex_menu_common_btn" id="mathfield_move_btn">move mathfield</button>
+      <button class="contex_menu_common_btn" id="mathfield_remove_btn">remove mathfield</button>
     </div>
     <div id="context_menu_textfield">
-      <button class="contex_menu_common_btn" id="textfield_remove_btn">remove textfield</button>
       <button class="contex_menu_common_btn" id="textfield_move_btn">move textfield</button>
+      <button class="contex_menu_common_btn" id="textfield_remove_btn">remove textfield</button>
+      <button class="contex_menu_common_btn" id="textfield_resize_btn">resize textfield</button>
     </div>
   </body>
 </html>
