@@ -1,14 +1,5 @@
 import "mathlive"
 import { MathfieldElement } from "mathlive";
-const fraction_button_const = document.getElementById('fraction_button') as HTMLButtonElement;
-const linear_fruction_button_const = document.getElementById('linear_fraction_button') as HTMLButtonElement;
-
-const superscript_button_const = document.getElementById('superscript_button') as HTMLButtonElement;
-const subscript_button_const = document.getElementById('subscript_button') as HTMLButtonElement;
-const sub_and_super_script_button_const = document.getElementById('sub_and_super_script_button') as HTMLButtonElement;
-const left_superscript_button_const = document.getElementById('left_superscript_button') as HTMLButtonElement;
-const left_subscript_button_const = document.getElementById('left_subscript_button') as HTMLButtonElement;
-const left_sub_and_super_script_button_const = document.getElementById('left_sub_and_super_script_button') as HTMLButtonElement;
 
 function insert_latex(latex: string) {
     const active_element = document.activeElement as HTMLElement;
