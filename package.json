@@ -13,6 +13,7 @@
     "vite": "^7.3.1"
   },
   "dependencies": {
+    "katex": "^0.16.44",
     "mathlive": "^0.108.3"
   }
 }

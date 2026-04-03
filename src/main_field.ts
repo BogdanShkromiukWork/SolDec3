@@ -1,6 +1,3 @@
-// setTimeout(() => {
-//     alert('test');
-// }, 0);
                         // Conetxt menu constants start
 const context_menu_mathfield_const = document.getElementById('context_menu_mathfield') as HTMLDivElement;
 let current_element: any = null;
@@ -99,7 +96,7 @@ function slides_remove(){
         slide_controllers.delete(slide);
     });
     slidesToRemove.length = 0;
-}
+};
 function slides_removeMode_off(){
     all_slides.forEach(slide =>{
         const control_and_style_slide_to_remove_const2 = slide_controllers.get(slide)
@@ -116,7 +113,7 @@ function slides_removeMode_off(){
     mathfields.forEach((mathfield) => {
         mathfield.style.display = 'inline-block';
     });
-}
+};
                         // Add/remove slide btns functions end
 
 
@@ -529,6 +526,10 @@ window.addEventListener('mouseup', (window_mouseup) =>{
     const clickedOutsideAllSlides = all_slides.every(slide => 
         !slide.contains(window_mouseup.target as Node)
     );
+    const all_buttons: HTMLButtonElement[] = Array.from(document.querySelectorAll('button'))
+    const clicked_out_all_buttons = all_buttons.every(button => 
+        !button.contains(window_mouseup.target as Node)
+    )
     if (clickedOutsideAllSlides) {
         slides_removeMode_off();
         element_move_mode_off();
@@ -654,7 +655,6 @@ slide_remove_btn_const.addEventListener('click', () => {
     mathfield_insert_mode_off()
     element_move_mode_off()
     textfield_insert_mode_off()
-    insert_mode_mathfield = false
     all_slides.forEach(slide => {
         style_not_allowed_cursor(slide)
         if (!slide_removeMode) {
@@ -678,7 +678,7 @@ slide_remove_btn_const.addEventListener('click', () => {
         slide_removeMode = false;
         slides_remove()
         slide_remove_btn_const.style.backgroundColor = "#bababa";
-    }
+    };
 });
                         // Remove slide btn end
 
