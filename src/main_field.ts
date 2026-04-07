@@ -530,7 +530,7 @@ window.addEventListener('mouseup', (window_mouseup) =>{
     const clicked_out_all_buttons = all_buttons.every(button => 
         !button.contains(window_mouseup.target as Node)
     )
-    if (clickedOutsideAllSlides) {
+    if (clickedOutsideAllSlides && clicked_out_all_buttons) {
         slides_removeMode_off();
         element_move_mode_off();
         textfield_insert_mode_off();
