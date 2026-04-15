@@ -4,6 +4,7 @@ let current_element: any = null;
 let element_to_move: any = null;
 let element_move_mode = false;
 let shift_key_pressed = false;
+let ctrl_key_pressed = false;
 const move_element_btn_const = document.getElementById('move_element_btn') as HTMLButtonElement;
                         // Context menu constants end
                         // Add/remove slide btns constants start
@@ -47,9 +48,21 @@ const remove_textfield_btn_const = document.getElementById('textfield_remove_btn
 const move_textfield_btn_const = document.getElementById('textfield_move_btn') as HTMLButtonElement;
 const resize_textfield_btn_const = document.getElementById('textfield_resize_btn') as HTMLButtonElement;
 let slide_with_to_resize_textfield: HTMLDivElement | null = null;
-// let mousedown_test: boolean = false;
-// let mousedown_marker: HTMLDivElement | null = null;
                         // Add/remove/move textfield btns constants end
+                        // Add/remove/move pictures btns constants start
+//
+const upload_picture_button_const = document.getElementById('upload_picture_button') as HTMLButtonElement;
+const pictures_insert_panel_back_const = document.getElementById('pictures_insert_panel_back') as HTMLDivElement;
+let picture_to_insert: HTMLImageElement | null = null;
+const all_pictures_demonstrated: HTMLImageElement[] = [];
+const all_pictures_on_slides: HTMLImageElement[] = [];
+const picture_upload_input_const = document.getElementById('picture_upload_input') as HTMLInputElement;
+let picture_insert_mode = false;
+const context_menu_picture_const = document.getElementById('context_menu_picture') as HTMLDivElement;
+const remove_picture_btn_const = document.getElementById('picture_remove_btn') as HTMLButtonElement;
+const move_picture_btn_const = document.getElementById('picture_move_btn') as HTMLButtonElement;
+const resize_picture_btn_const = document.getElementById('picture_resize_btn') as HTMLButtonElement;
+                        // Add/remove/move pictures btns constants end
                         // Context menus functions start
 //.
                         // Context menus functions end
@@ -149,7 +162,7 @@ function move_element_to(){
                     if (X_coordinate_slide_click + element_to_move_width <= current_slide_width){
                         element_to_move.style.left = `${X_coordinate_slide_click}px`
                     } else {
-                        element_to_move.style.left = `${current_slide_width - element_to_move_width + 1}px`
+                        element_to_move.style.left = `${current_slide_width - element_to_move_width}px`
                     }
                 } else {
                     element_to_move.style.left = `0px`
@@ -159,7 +172,7 @@ function move_element_to(){
                         element_to_move.style.top = `${Y_coordinate_slide_click}px`
                     } else {
                         if (current_slide_height - element_to_move_height >= 0){
-                            element_to_move.style.top = `${current_slide_height - element_to_move_height + 1}px`
+                            element_to_move.style.top = `${current_slide_height - element_to_move_height}px`
                         } else {
                             element_to_move.style.top = `0px`
                         };
@@ -177,7 +190,7 @@ function move_element_to(){
             style_default_cursor(slide);
             element_move_mode = false;
             move_element_btn_const.style.backgroundColor = '#bababa';
-            slide.classList.remove('intercept_mode_child_off');
+            all_slides_onslide_elements_pointer_events_on();
         });
     };
 };
@@ -186,8 +199,8 @@ function element_move_mode_off(){
     if(element_move_mode){
         all_slides.forEach((slide) =>{
             style_default_cursor(slide)
-            slide.classList.remove('intercept_mode_child_off');
         });
+        all_slides_onslide_elements_pointer_events_on();
     };
     element_move_mode = false;
     move_element_btn_const.style.backgroundColor = '#bababa';
@@ -269,6 +282,8 @@ function add_mathfield (slide: HTMLDivElement){
         context_menu_mathfield_const.style.left = `${context_menu_click.pageX}px`;
         context_menu_mathfield_const.style.top = `${context_menu_click.pageY}px`;
         current_element = (context_menu_click.target as HTMLElement).closest('.mathfield_cover');
+        context_menu_textfield_const.style.display = 'none';
+        context_menu_picture_const.style.display = 'none';
     });
     new_mathfield.addEventListener('click', (event: MouseEvent) =>{
         current_element = (event.target as HTMLElement).closest('.mathfield_cover');
@@ -327,7 +342,6 @@ function mathfield_insert_mode_off (){
         const slide_to_turn_off_mathfield_insert_mode = mathfield_slide_insert_controllers.get(slide)
         slide.removeEventListener('click', slide_to_turn_off_mathfield_insert_mode)
         style_default_cursor(slide)
-        slide.classList.remove('intercept_mode_child_off');
     });
     mathfields.forEach((mathfield) => {
         mathfield.style.display = 'inline-block';
@@ -400,6 +414,7 @@ function textfield_insert(){
                 all_slides.forEach((slide) =>{
                     style_crosshair_cursor(slide);
                 });
+                all_slides_onslide_elements_pointer_events_off();
             };
         });
         new_textfield.addEventListener('contextmenu', (context_menu_click) => {
@@ -409,6 +424,8 @@ function textfield_insert(){
             context_menu_textfield_const.style.left = `${context_menu_click.pageX}px`;
             context_menu_textfield_const.style.top = `${context_menu_click.pageY}px`;
             current_element = new_textfield
+            context_menu_mathfield_const.style.display = 'none';
+            context_menu_picture_const.style.display = 'none';
         }, true);
         textfields.push(new_textfield)
         new_textfield.focus();
@@ -431,7 +448,6 @@ function textfield_insert_mode_off() {
             slide.removeEventListener('mouseup', textfield_insert_const)
         }
         style_default_cursor(slide)
-        slide.classList.remove('intercept_mode_child_off');
     });
     textfield_insert_mode = false;
     insert_textfield_btn_const.style.backgroundColor = "#bababa";
@@ -502,6 +518,232 @@ function resize_textfield_mode_off(){
     slide_with_to_resize_textfield = null;
 };
                         // Add/remove/move textfield btns functions end
+                        // Add/remove/move pictures btns functions start
+function uploaded_picture_demonstrate(picture: string){
+    const new_picture_demonstrated_back = document.createElement('div');
+    const new_picture_demonstrated = document.createElement('img');
+    const new_picture_demonstrated_cover = document.createElement('div');
+    new_picture_demonstrated_back.classList.add('picture_demonstration_back');
+    new_picture_demonstrated.classList.add('picture_demonstration');
+    new_picture_demonstrated_cover.classList.add('picture_demonstrated_active_cover');
+    new_picture_demonstrated.src = picture;
+    new_picture_demonstrated_back.appendChild(new_picture_demonstrated);
+    new_picture_demonstrated_back.appendChild(new_picture_demonstrated_cover);
+    pictures_insert_panel_back_const.appendChild(new_picture_demonstrated_back);
+    all_pictures_demonstrated.push(new_picture_demonstrated);
+    let picture_in_insert_mode = false;
+    new_picture_demonstrated_back.addEventListener('click', (click) =>{
+        let picture_in_insert_mode_inside_check = false;
+        if (picture_to_insert !== null && click.isTrusted){
+            const current_picture_to_insert_back = picture_to_insert.parentElement;
+            if (current_picture_to_insert_back !== null && picture_to_insert !== new_picture_demonstrated){
+                current_picture_to_insert_back.click()
+            };
+        };
+        if (!click.isTrusted && picture_in_insert_mode){
+            new_picture_demonstrated_cover.style.display = 'none';
+            picture_to_insert = null;
+            picture_in_insert_mode = false;
+        };
+        if (click.isTrusted && !picture_in_insert_mode && picture_insert_mode && !picture_in_insert_mode_inside_check){
+            new_picture_demonstrated_cover.style.display = 'block';
+            picture_to_insert = new_picture_demonstrated;
+            picture_in_insert_mode = true;
+            picture_in_insert_mode_inside_check = true;
+            all_slides.forEach((slide) =>{
+                style_crosshair_cursor(slide);
+            });
+        };
+        if (click.isTrusted && !picture_in_insert_mode && !picture_insert_mode && !picture_in_insert_mode_inside_check){
+            new_picture_demonstrated_cover.style.display = 'block';
+            picture_to_insert = new_picture_demonstrated;
+            picture_in_insert_mode = true;
+            picture_insert_mode_on();
+            picture_in_insert_mode_inside_check = true;
+        };
+        if (click.isTrusted && picture_in_insert_mode && !picture_in_insert_mode_inside_check){
+            pictures_insert_mode_off();
+            picture_in_insert_mode_inside_check = true;
+        };
+        picture_in_insert_mode_inside_check = false;
+    });
+};
+function pictures_insert_mode_off(){
+    if (picture_to_insert !== null){
+        const current_picture_to_insert_back = picture_to_insert.parentElement;
+        if (current_picture_to_insert_back !== null){
+            current_picture_to_insert_back.click();
+        };
+    };
+    all_slides.forEach((slide) =>{
+        style_default_cursor(slide);
+        slide.removeEventListener('click', insert_picture_const);
+    });
+    picture_insert_mode = false;
+};
+function insert_picture(){
+    if (mousedown_slide === mouseup_slide && mousedown_slide !== null && mouseup_slide !== null && picture_insert_mode && picture_to_insert !== null){
+        const new_picture_on_slide = picture_to_insert.cloneNode(true) as HTMLImageElement;
+        new_picture_on_slide.removeAttribute('class');
+        new_picture_on_slide.removeAttribute('id');
+        new_picture_on_slide.classList.add('picture_on_slide');
+        new_picture_on_slide.style.position = 'absolute';
+        if (!ctrl_key_pressed){
+            const height_to_width_ratio = picture_to_insert.naturalHeight / picture_to_insert.naturalWidth;
+            let X_picture = Math.min(X_mousedown!, X_mouseup!);
+            let Y_picture = Math.min(Y_mousedown!, Y_mouseup!);
+            let width_picture = Math.abs(X_mousedown! - X_mouseup!);
+            let height_picture = width_picture * height_to_width_ratio;
+            if (X_picture >= 0){
+                new_picture_on_slide.style.left = `${X_picture}px`;
+            } else {
+                X_picture = 0;
+                new_picture_on_slide.style.left = `${X_picture}px`;
+            };
+            if (Y_picture >= 0){
+                new_picture_on_slide.style.top = `${Y_picture}px`;
+            } else {
+                Y_picture = 0;
+                new_picture_on_slide.style.top = `${Y_picture}px`;
+            };
+            if ((width_picture + X_picture) <= mouseup_slide.getBoundingClientRect().width-10){
+                if (width_picture >= 20){
+                    new_picture_on_slide.style.width = `${width_picture}px`;
+                } else {
+                    new_picture_on_slide.style.width = `20px`;
+                    height_picture = 20 * height_to_width_ratio;
+                };
+            }
+            if (width_picture + X_picture > mouseup_slide.getBoundingClientRect().width - 10){
+                if (mouseup_slide.getBoundingClientRect().width - 10 - X_picture >= 20){
+                    X_picture = mouseup_slide.getBoundingClientRect().width - X_picture-10;
+                    if (X_picture >= 0){
+                        new_picture_on_slide.style.width = `${X_picture}px`;
+                    } else {
+                        X_picture = 0;
+                        new_picture_on_slide.style.width = `${X_picture}px`;
+                        width_picture = mouseup_slide.getBoundingClientRect().width - 10;
+                        height_picture = width_picture * height_to_width_ratio;
+                    };
+                } else {
+                    new_picture_on_slide.style.width = `20px`;
+                    new_picture_on_slide.style.left = `${mouseup_slide.getBoundingClientRect().width - 30}px`;
+                    height_picture = 20 * height_to_width_ratio;
+                };
+            };
+            if (height_picture + Y_picture <= mouseup_slide.getBoundingClientRect().height - 10){
+                new_picture_on_slide.style.height = `${height_picture}px`;
+            };
+            if (height_picture + Y_picture > mouseup_slide.getBoundingClientRect().height - 10){
+                Y_picture = mouseup_slide.getBoundingClientRect().height - height_picture - 10;
+                if (Y_picture >= 0){
+                    new_picture_on_slide.style.height = `${height_picture}px`;
+                    new_picture_on_slide.style.top = `${Y_picture}px`;
+                } else {
+                    Y_picture = 0;
+                    new_picture_on_slide.style.top = `${Y_picture}px`;
+                    new_picture_on_slide.style.height = `${mouseup_slide.getBoundingClientRect().height - 10}px`;
+                };
+            };
+        } else {
+            let X_picture = Math.min(X_mousedown!, X_mouseup!);
+            let Y_picture = Math.min(Y_mousedown!, Y_mouseup!);
+            let width_picture = Math.abs(X_mousedown! - X_mouseup!);
+            let height_picture = Math.abs(Y_mousedown! - Y_mouseup!);
+            if (X_picture >= 0){
+                new_picture_on_slide.style.left = `${X_picture}px`;
+            } else {
+                X_picture = 0;
+                new_picture_on_slide.style.left = `${X_picture}px`;
+            };
+            if (Y_picture >= 0){
+                new_picture_on_slide.style.top = `${Y_picture}px`;
+            } else {
+                Y_picture = 0;
+                new_picture_on_slide.style.top = `${Y_picture}px`;
+            };
+            if ((width_picture + X_picture) <= mouseup_slide.getBoundingClientRect().width-12){
+                if (width_picture >= 20){
+                    new_picture_on_slide.style.width = `${width_picture}px`;
+                } else {
+                    new_picture_on_slide.style.width = `20px`;
+                };
+            }
+            if (width_picture + X_picture > mouseup_slide.getBoundingClientRect().width - 12){
+                if (mouseup_slide.getBoundingClientRect().width - 12 - X_picture >= 20){
+                    new_picture_on_slide.style.width = `${mouseup_slide.getBoundingClientRect().width - X_picture-12}px`;
+                } else {
+                    new_picture_on_slide.style.width = `20px`;
+                    new_picture_on_slide.style.left = `${mouseup_slide.getBoundingClientRect().width - 32}px`;
+                };
+            };
+            if (height_picture + Y_picture <= mouseup_slide.getBoundingClientRect().height - 12){
+                if (height_picture >= 20){
+                new_picture_on_slide.style.height = `${height_picture}px`;
+                } else {
+                new_picture_on_slide.style.minHeight = `20px`;
+                };
+            };
+            if (height_picture + Y_picture > mouseup_slide.getBoundingClientRect().height - 12){
+                if (mouseup_slide.getBoundingClientRect().height - 12 - Y_picture >= 20){
+                    new_picture_on_slide.style.minHeight = `${mouseup_slide.getBoundingClientRect().height - Y_picture-12}px`;
+                } else {
+                    new_picture_on_slide.style.minHeight = `20px`;
+                    new_picture_on_slide.style.top = `${mouseup_slide.getBoundingClientRect().height - 32}px`;
+                };
+            };
+        };
+        mousedown_slide.appendChild(new_picture_on_slide);
+        all_pictures_on_slides.push(new_picture_on_slide);
+        new_picture_on_slide.addEventListener('click', (event: MouseEvent) =>{
+            current_element = new_picture_on_slide
+            event.stopPropagation();
+            if (element_move_mode){
+                element_to_move = current_element
+                all_slides.forEach((slide) =>{
+                    style_crosshair_cursor(slide);
+                });
+                all_slides_onslide_elements_pointer_events_off();
+            };
+        });
+        new_picture_on_slide.addEventListener('contextmenu', (context_menu_click) => {
+            context_menu_click.stopPropagation();
+            context_menu_click.preventDefault();
+            context_menu_picture_const.style.display = 'flex';
+            context_menu_picture_const.style.left = `${context_menu_click.pageX}px`;
+            context_menu_picture_const.style.top = `${context_menu_click.pageY}px`;
+            current_element = new_picture_on_slide
+            context_menu_mathfield_const.style.display = 'none';
+            context_menu_textfield_const.style.display = 'none';
+        }, true);
+        if (!shift_key_pressed){
+            pictures_insert_mode_off();
+            all_slides_onslide_elements_pointer_events_on();
+        } else {
+            all_slides.forEach((slide) =>{
+                style_crosshair_cursor(slide);
+            });
+            all_slides_onslide_elements_except_drawings_pointer_events_on();
+            all_slides_onslide_elements_except_drawings_pointer_events_off();
+        };
+    };
+};
+const insert_picture_const = () => {
+    insert_picture();
+};
+function picture_insert_mode_on(){
+    element_move_mode_off();
+    slides_removeMode_off();
+    textfield_insert_mode_off();
+    mathfield_insert_mode_off();
+    picture_insert_mode = true;
+    all_slides.forEach((slide) =>{
+        style_crosshair_cursor(slide);
+        slide.addEventListener('click', insert_picture_const);
+    });
+}
+
+                        // Add/remove/move pictures btns functions end
 
 
 
@@ -530,12 +772,21 @@ window.addEventListener('mouseup', (window_mouseup) =>{
     const clicked_out_all_buttons = all_buttons.every(button => 
         !button.contains(window_mouseup.target as Node)
     )
+    const clicked_out_all_demonstrated_pictures = all_pictures_demonstrated.every(picture => {
+        const picture_back = picture.parentElement;
+        if (picture_back !== null) {
+            return !picture_back.contains(window_mouseup.target as Node);
+        };
+    });
     if (clickedOutsideAllSlides && clicked_out_all_buttons) {
         slides_removeMode_off();
         element_move_mode_off();
         textfield_insert_mode_off();
         mathfield_insert_mode_off();
         all_slides_onslide_elements_pointer_events_on();
+    };
+    if (clicked_out_all_demonstrated_pictures && clickedOutsideAllSlides){
+        pictures_insert_mode_off();
     };
 });
 document.addEventListener('contextmenu', (e: MouseEvent) => {
@@ -549,9 +800,19 @@ window.addEventListener('keydown', (event) => {
         shift_key_pressed = true;
     }
 });
+window.addEventListener('keydown', (event) => {
+    if (event.key === 'Control') {
+        ctrl_key_pressed = true;
+    }
+});
 window.addEventListener('keyup', (event) => {
     if (event.key === 'Shift') {
         shift_key_pressed = false;
+    }
+});
+window.addEventListener('keyup', (event) => {
+    if (event.key === 'Control') {
+        ctrl_key_pressed = false;
     }
 });
                         // Window listener end
@@ -710,7 +971,6 @@ insert_mathfield_btn.addEventListener('click', ()=>{
     all_slides.forEach(slide =>{
         if (!insert_mode_mathfield) {
             style_crosshair_cursor(slide)
-            slide.classList.add('intercept_mode_child_off');
             const add_mathfield_const1 = add_mathfield.bind(null, slide);
             mathfield_slide_insert_controllers.set(slide, add_mathfield_const1)
             slide.addEventListener('click', add_mathfield_const1);
@@ -732,7 +992,7 @@ insert_mathfield_btn.addEventListener('click', ()=>{
 mathfield_remove_btn_const.addEventListener('click', ()=>{
     mathfield_to_remove_cover = current_element;
     mathfield_to_remove = mathfield_to_remove_cover?.firstElementChild as MathfieldElement || null;
-    if (mathfield_to_remove_cover !== null){
+    if (mathfield_to_remove_cover !== null && mathfield_to_remove_cover.firstElementChild instanceof MathfieldElement && mathfield_to_remove !== null){
         mathfield_to_remove_cover.remove();
         mathfield_slide_insert_controllers.delete(mathfield_to_remove);
         const mathfield_to_remove_index = mathfields.indexOf(mathfield_to_remove)
@@ -788,7 +1048,7 @@ insert_textfield_btn_const.addEventListener('click', ()=>{
                         // Remove textfield start
 remove_textfield_btn_const.addEventListener('click', () => {
     const textfield_to_remove = current_element;
-    if (textfield_to_remove !== null){
+    if (textfield_to_remove !== null && textfield_to_remove instanceof HTMLParagraphElement){
         textfield_to_remove.remove();
         const textfield_to_remove_index = textfields.indexOf(textfield_to_remove)
         textfields.splice(textfield_to_remove_index, 1)
@@ -827,3 +1087,40 @@ resize_textfield_btn_const.addEventListener('click', (event) => {
     };
 });
                         // Resize textfield end
+                        // Picture insert btn start
+upload_picture_button_const.addEventListener('click', () => {
+    picture_upload_input_const.click();
+});
+picture_upload_input_const.addEventListener('change', () => {
+    const pictures_input = picture_upload_input_const.files;
+    if (pictures_input !== null && pictures_input.length > 0){
+        Array.from(pictures_input).forEach((picture_input) => {
+            const picture_url = URL.createObjectURL(picture_input);
+            uploaded_picture_demonstrate(picture_url);
+        });
+    };
+});
+move_picture_btn_const.addEventListener('click', (event) => {
+    if (!element_move_mode){
+        element_to_move = current_element;
+        event.stopPropagation();
+        all_slides_onslide_elements_pointer_events_off();
+        all_slides.forEach((slide) => {
+            style_crosshair_cursor(slide)
+        });
+    };
+    element_move_mode = true;
+    move_element_btn_const.style.backgroundColor = '#858585';
+    context_menu_picture_const.style.display = 'none';
+});
+remove_picture_btn_const.addEventListener('click', () => {
+    const picture_to_remove = current_element;
+    if (picture_to_remove !== null && picture_to_remove instanceof HTMLImageElement){
+        picture_to_remove.remove();
+        const picture_to_remove_index = all_pictures_on_slides.indexOf(picture_to_remove)
+        all_pictures_on_slides.splice(picture_to_remove_index, 1)
+        context_menu_picture_const.style.display = 'none';
+    };
+});
+
+                        // Picture insert btn end

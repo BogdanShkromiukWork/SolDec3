@@ -61,3 +61,17 @@ text_panel_btn_const.addEventListener('click', () => {
   text_bottom_panel_back_const.style.display = 'block';
 });
 });
+
+const slide_panel_btn_const = document.getElementById('slide_panel_btn') as HTMLButtonElement;
+const picture_panel_btn_const = document.getElementById('picture_panel_btn') as HTMLButtonElement;
+const picture_upload_button_const = document.getElementById('upload_picture_button') as HTMLButtonElement;
+const pictures_insert_panel_back_const = document.getElementById('pictures_insert_panel_back') as HTMLDivElement;
+picture_panel_btn_const.addEventListener('click', () => {
+  pictures_insert_panel_back_const.style.display = 'block';
+});
+slide_panel_btn_const.addEventListener('click', () => {
+  pictures_insert_panel_back_const.style.display = 'none';
+});
+picture_upload_button_const.addEventListener('click', () => {
+  pictures_insert_panel_back_const.style.display = 'block';
+});

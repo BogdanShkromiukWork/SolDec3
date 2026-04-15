@@ -10,6 +10,9 @@
     <script type="module" src="/src/math_field.ts"></script>
     <script type="module" src="/src/latex_functions_insert.ts"></script>
     <script type="module" src="/src/latex_style_render.ts"></script>
+
+    <!-- <script type="module" src="/src/test_scripts.ts"></script> -->
+
     <link rel="stylesheet" href="/src/style.css" />
     <title>soldec3</title>
   </head>
@@ -19,13 +22,15 @@
     <div id="left_top_control_panel_back">
       <div class="left_top_control_panel_main_grid_back">
         <div class="left_top_control_panel_main_grid">
-          <button class="button_common1">Slpn</button>   
+          <button class="button_common1" id="slide_panel_btn">Slpn</button>   
+          <button class="button_common1" id="picture_panel_btn">pic</button>
         </div>
       </div>
       <div class="left_top_control_panel_secondary_grid_back">
         <div class="left_top_control_panel_secondary_grid">
           <button class="button_common1" id="slide_add_btn">add</button>
-          <button class="button_common1" id="slide_remove_btn">rem</button>   
+          <button class="button_common1" id="slide_remove_btn">rem</button>
+          <button class="button_common1" id="upload_picture_button">uplPic</button>
         </div>
       </div>
     </div>
@@ -75,13 +80,15 @@
     <div id="center_top_control_panel_back" style="display: none;">
     </div>
 
-    <div class="left_bottom_control_panel_back">
-
+    <div class="left_bottom_control_panel_back" id = "pictures_insert_panel_back">
     </div>
 
     <div class="right_bottom_control_panel_back" id="functions_bottom_panel_back">
       <div class="insert_remove_change_field_btn_back">
-        <button class="button_common1" id="insert_mathfield_btn">insert mathfield</button>
+        <button class="button_common1" id="insert_mathfield_btn">Insert mathfield</button>
+      </div>
+      <div class="insert_remove_change_field_btn_back">
+        <button class="button_common1" id="text_insert_mathfield_button">Insert text</button>
       </div>
       <div class="latex_insert_panel_back">
         <p class="latex_insert_panel_title">Fractions</p>
@@ -110,6 +117,77 @@
           <button class="button_common1 latex_insert_buttons_fontsize_3_5" id="root_universal_button"></button>
         </div>
       </div>
+      <div class="latex_insert_panel_back">
+        <p class="latex_insert_panel_title">Integrals</p>
+        <div class="latex_insert_buttons_grid">
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="undefined_integral_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="defined_integral_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="undefined_double_integral_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="undefined_triple_integral_button"></button>
+        </div>
+        <div class="latex_insert_buttons_grid">
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="undefined_surface_integral_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="defined_surface_integral_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="undefined_double_surface_integral_button"></button>
+        </div>
+      </div>
+      <div class="latex_insert_panel_back">
+        <p class="latex_insert_panel_title">Derivatives</p>
+        <div class="latex_insert_buttons_grid">
+          <button class="button_common1 latex_insert_buttons_fontsize_2_4" id="d_dx_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_4" id="d_d_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_4" id="dy_dx_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_4" id="d2_dx2_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_3" id="d2_d2_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_4" id="d2y_dx2_button"></button>
+        </div>
+      </div>
+      <div class="latex_insert_panel_back">
+        <p class="latex_insert_panel_title">Trigonometry</p>
+        <div class="latex_insert_buttons_grid">
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="sin_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="cos_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="tan_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="cot_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="sec_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="csc_button"></button>
+        </div>
+      </div>
+      <div class="latex_insert_panel_back">
+        <p class="latex_insert_panel_title">Trigonometry reverse</p>
+        <div class="latex_insert_buttons_grid">
+          <button class="button_common1 latex_insert_buttons_fontsize_1_7" id="arcsin_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_1_7" id="arccos_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_1_7" id="arctan_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_1_7" id="arccot_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_1_7" id="arcsec_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_1_7" id="arccsc_button"></button>
+        </div>
+      </div>
+      <div class="latex_insert_panel_back">
+        <p class="latex_insert_panel_title">Brackets</p>
+        <div class="latex_insert_buttons_grid">
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="brackets_circle_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="brackets_module_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="brackets_figure_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="brackets_square_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="brackets_angle_button"></button>
+        </div>
+      </div>
+      <div class="latex_insert_panel_back">
+        <p class="latex_insert_panel_title">Signs</p>
+        <div class="latex_insert_buttons_grid">
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="less_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="more_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="equal_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="less_equal_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="more_equal_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="not_equal_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="left_arrow_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="right_arrow_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="double_arrow_button"></button>
+        </div>
+      </div>
     </div>
     <div class="right_bottom_control_panel_back" id="text_bottom_panel_back">
       <div class="insert_remove_change_field_btn_back">
@@ -121,15 +199,21 @@
       <div class="main_field">
       </div>
     </div>
-    <div id="context_menu_mathfield">
+    <div id="context_menu_mathfield" class="context_menu_onslide">
       <button class="contex_menu_common_btn" id="mathfield_move_btn">move mathfield</button>
       <button class="contex_menu_common_btn" id="mathfield_remove_btn">remove mathfield</button>
     </div>
-    <div id="context_menu_textfield">
+    <div id="context_menu_textfield" class="context_menu_onslide">
       <button class="contex_menu_common_btn" id="textfield_move_btn">move textfield</button>
       <button class="contex_menu_common_btn" id="textfield_remove_btn">remove textfield</button>
       <button class="contex_menu_common_btn" id="textfield_resize_btn">resize textfield</button>
     </div>
+    <div id="context_menu_picture" class="context_menu_onslide">
+      <button class="contex_menu_common_btn" id="picture_move_btn">move picture</button>
+      <button class="contex_menu_common_btn" id="picture_resize_btn">resize picture</button>
+      <button class="contex_menu_common_btn" id="picture_remove_btn">remove picture</button>
+    </div>
+    <input type="file" id="picture_upload_input" multiple accept="image/*" style="display: none;" />
   </body>
 </html>
 <!-- 

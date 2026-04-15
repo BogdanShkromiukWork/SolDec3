@@ -96,6 +96,8 @@ body {
 }
         /* Bottom */
 .left_bottom_control_panel_back {
+  overflow-y: scroll;
+  direction: rtl;
   position: absolute;
   left: 0;
   bottom: 0;
@@ -104,6 +106,7 @@ body {
   background-color: #ebebeb;
 }
 .right_bottom_control_panel_back {
+  overflow-y:auto;
   position: absolute;
   right: 0;
   bottom: 0;
@@ -196,7 +199,7 @@ body {
 .intercept_mode_self_off{
   pointer-events: none !important;
 }
-.intercept_mode_child_on * {
+/* .intercept_mode_child_on * {
   pointer-events: auto !important;
 }
 .intercept_mode_child_off * {
@@ -205,7 +208,7 @@ body {
 .insert_mode_child_off math-field {
   pointer-events: none !important;
   user-select: none;
-}
+} */
                                       /* Intercept mode end */
                                       /* Context menu start */
 .contex_menu_common_btn {
@@ -219,21 +222,21 @@ body {
 .contex_menu_common_btn :hover {
   background-color: #858585;
 }
-#context_menu_mathfield {
+.context_menu_onslide {
   padding: 0;
   margin: 0;
   position: absolute;
-  display: none;
   flex-direction: column;
   z-index: 1000;
 }
-#context_menu_textfield {
-  padding: 0;
-  margin: 0;
-  position: absolute;
+#context_menu_mathfield {
   display: none;
-  flex-direction: column;
-  z-index: 1000;
+}
+#context_menu_textfield {
+  display: none;
+}
+#context_menu_picture {
+  display: none;
 }
                                       /* Context menu end */
                                       /* Content fields start */
@@ -311,11 +314,24 @@ body {
   grid-auto-rows: calc(20vh/3);
   place-items: center;
   background-color: transparent;
-}.latex_insert_buttons_fontsize_1{
+}
+.latex_insert_buttons_fontsize_1{
   font-size: 1vh;
+}
+.latex_insert_buttons_fontsize_1_7{
+  font-size: 1.7vh;
+}
+.latex_insert_buttons_fontsize_1_8{
+  font-size: 1.8vh;
 }
 .latex_insert_buttons_fontsize_2{
   font-size: 2vh;
+}
+.latex_insert_buttons_fontsize_2_3{
+  font-size: 2.3vh;
+}
+.latex_insert_buttons_fontsize_2_4{
+  font-size: 2.4vh;
 }
 .latex_insert_buttons_fontsize_2_5{
   font-size: 2.5vh;
@@ -330,3 +346,49 @@ body {
   font-size: 4vh;
 }
                                       /* Latex insert panel end */
+                                      /* Pictures panel start */
+#pictures_insert_panel_back {
+  display: none;
+  padding-top: 0.5vh;
+}
+.picture_demonstration_back{
+  margin-bottom: 0.5vh;
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  width: 90%;
+  min-height: 1px;
+  height: auto;
+  background-color: transparent;
+  user-select: none;
+}
+.picture_demonstration {
+  display: block;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+.picture_demonstrated_active_cover {
+  pointer-events: none;
+  position: absolute;
+  background-color: #0031803d;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: none;
+  box-sizing: border-box;
+  border: solid 2px #4287f5FF;
+}
+#upload_picture_button {
+  grid-column: 2;
+  grid-row: 1;
+}
+.picture_on_slide {
+  height: auto;
+  user-select: none;
+}
+                                      /* Pictures panel end */
