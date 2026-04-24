@@ -13,6 +13,7 @@ const text_panel_btn_const = document.getElementById('text_panel_btn') as HTMLBu
 
 const functions_bottom_panel_back_const = document.getElementById('functions_bottom_panel_back') as HTMLDivElement;
 const text_bottom_panel_back_const = document.getElementById('text_bottom_panel_back') as HTMLDivElement;
+const drawing_bottom_panel_back_const = document.getElementById('drawing_bottom_panel_back') as HTMLDivElement;
 
 home_panel_btn_const.addEventListener('click', () => {
   home_top_panel_const.style.display = 'block';
@@ -22,6 +23,7 @@ home_panel_btn_const.addEventListener('click', () => {
   text_top_panel_const.style.display = 'none';
   functions_bottom_panel_back_const.style.display = 'none';
   text_bottom_panel_back_const.style.display = 'none';
+  drawing_bottom_panel_back_const.style.display = 'none';
 });
 
 functions_panel_btn_const.addEventListener('click', () => {
@@ -32,6 +34,7 @@ functions_panel_btn_const.addEventListener('click', () => {
   text_top_panel_const.style.display = 'none';
   functions_bottom_panel_back_const.style.display = 'block';
   text_bottom_panel_back_const.style.display = 'none';
+  drawing_bottom_panel_back_const.style.display = 'none';
 });
 simplification_panel_btn_const.addEventListener('click', () => {
   home_top_panel_const.style.display = 'none';
@@ -41,6 +44,7 @@ simplification_panel_btn_const.addEventListener('click', () => {
   text_top_panel_const.style.display = 'none';
   functions_bottom_panel_back_const.style.display = 'none';
   text_bottom_panel_back_const.style.display = 'none';
+  drawing_bottom_panel_back_const.style.display = 'none';
 });
 drawing_panel_btn_const.addEventListener('click', () => {
   home_top_panel_const.style.display = 'none';
@@ -50,6 +54,7 @@ drawing_panel_btn_const.addEventListener('click', () => {
   text_top_panel_const.style.display = 'none';
   functions_bottom_panel_back_const.style.display = 'none';
   text_bottom_panel_back_const.style.display = 'none';
+  drawing_bottom_panel_back_const.style.display = 'block';
 });
 text_panel_btn_const.addEventListener('click', () => {
   home_top_panel_const.style.display = 'none';
@@ -59,6 +64,7 @@ text_panel_btn_const.addEventListener('click', () => {
   text_top_panel_const.style.display = 'block';
   functions_bottom_panel_back_const.style.display = 'none';
   text_bottom_panel_back_const.style.display = 'block';
+  drawing_bottom_panel_back_const.style.display = 'none';
 });
 });
 

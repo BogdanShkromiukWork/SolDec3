@@ -63,6 +63,11 @@ const remove_picture_btn_const = document.getElementById('picture_remove_btn') a
 const move_picture_btn_const = document.getElementById('picture_move_btn') as HTMLButtonElement;
 const resize_picture_btn_const = document.getElementById('picture_resize_btn') as HTMLButtonElement;
                         // Add/remove/move pictures btns constants end
+                        // Canvas constants start
+const all_canvas_fields: HTMLCanvasElement[] = [];
+let drawing_mode = false;
+let current_canvas: HTMLCanvasElement | null = null;   
+                        // Canvas constants end
                         // Context menus functions start
 //.
                         // Context menus functions end
@@ -98,10 +103,23 @@ function control_and_style_slide_to_remove (slide: HTMLDivElement){
 function slides_remove(){
     slidesToRemove.forEach(slide => {
         Array.from(slide.children).forEach((element_on_slide) =>{
-            if (element_on_slide instanceof MathfieldElement) {
-                const index_mathfield_on_deleted_slide = mathfields.indexOf(element_on_slide)
+            if (element_on_slide.firstElementChild instanceof MathfieldElement) {
+                const index_mathfield_on_deleted_slide = mathfields.indexOf(element_on_slide.firstElementChild as MathfieldElement)
                 mathfields.splice(index_mathfield_on_deleted_slide, 1);
             };
+            if (element_on_slide instanceof HTMLParagraphElement) {
+                const index_textfield_on_deleted_slide = textfields.indexOf(element_on_slide)
+                textfields.splice(index_textfield_on_deleted_slide, 1);
+            };
+            if (element_on_slide instanceof HTMLImageElement) {
+                const index_picture_on_deleted_slide = all_pictures_on_slides.indexOf(element_on_slide)
+                all_pictures_on_slides.splice(index_picture_on_deleted_slide, 1);
+            };
+            if (element_on_slide.firstElementChild instanceof HTMLCanvasElement) {
+                const index_canvas_on_deleted_slide = all_canvas_fields.indexOf(element_on_slide.firstElementChild)
+                all_canvas_fields.splice(index_canvas_on_deleted_slide, 1);
+            };
+
         });
         slide.remove();
         const index_all_slides_to_remove = all_slides.indexOf(slide)
@@ -127,6 +145,48 @@ function slides_removeMode_off(){
         mathfield.style.display = 'inline-block';
     });
 };
+function new_slide_add_listeners(slide: HTMLDivElement){
+    const slide_width = slide.getBoundingClientRect().width;
+    const slide_height = slide.getBoundingClientRect().height;
+    slide.addEventListener('click', (event) =>{
+        const slide_X_click = event.offsetX
+        const slide_Y_click = event.offsetY
+        if (slide_X_click >= -5 && slide_Y_click >= -5 && slide_X_click <= slide_width && slide_Y_click <= slide_height){
+            X_coordinate_slide_click = slide_X_click
+            Y_coordinate_slide_click = slide_Y_click
+            current_slide = slide;
+        };
+        if (element_to_move !== null) {
+            move_element_to()
+            all_slides_onslide_elements_pointer_events_on();
+        };
+    });
+    slide.addEventListener('mousedown', (event) =>{
+        const slide_Y_mousedown = event.offsetY
+        const slide_X_mousedown = event.offsetX
+        if (slide_X_mousedown >= -5 && slide_Y_mousedown >= -5 && slide_X_mousedown <= slide_width && slide_Y_mousedown <= slide_height){
+            X_mousedown = slide_X_mousedown
+            Y_mousedown = slide_Y_mousedown
+            mousedown_slide = slide;
+        };
+    });
+    slide.addEventListener('mouseup', (event) =>{
+        const slide_X_mouseup = event.offsetX
+        const slide_Y_mouseup = event.offsetY
+        if (slide_X_mouseup >= -5 && slide_Y_mouseup >= -5 && slide_X_mouseup <= slide_width && slide_Y_mouseup <= slide_height){
+            X_mouseup = slide_X_mouseup
+            Y_mouseup = slide_Y_mouseup
+            mouseup_slide = slide;
+        };
+    });
+    const new_canvas = document.createElement('canvas');
+    new_canvas.width = slide_width;
+    new_canvas.height = slide_height;
+    new_canvas.classList.add('slide_canvas');
+    all_canvas_fields.push(new_canvas);
+    slide.appendChild(new_canvas);
+    new_canvas.style.pointerEvents = 'none';
+}
                         // Add/remove slide btns functions end
 
 
@@ -235,6 +295,11 @@ function all_slides_onslide_elements_except_drawings_pointer_events_off(){
                 child.style.pointerEvents = 'none';
             };
     });
+    if (all_pictures_on_slides.length > 0){
+        all_pictures_on_slides.forEach((picture: HTMLImageElement) =>{
+            picture.style.pointerEvents = 'none';
+        });
+    };
 });
 };
 function all_slides_onslide_elements_except_drawings_pointer_events_on(){
@@ -261,6 +326,9 @@ function all_slides_onslide_elements_except_drawings_pointer_events_on(){
 };
 function all_slides_onslide_elements_pointer_events_off(){
     all_slides_onslide_elements_except_drawings_pointer_events_off()
+    all_canvas_fields.forEach((canvas) =>{
+        canvas.style.pointerEvents = 'none';
+    });
 };
 function all_slides_onslide_elements_pointer_events_on(){
     all_slides_onslide_elements_except_drawings_pointer_events_on()
@@ -533,6 +601,17 @@ function uploaded_picture_demonstrate(picture: string){
     all_pictures_demonstrated.push(new_picture_demonstrated);
     let picture_in_insert_mode = false;
     new_picture_demonstrated_back.addEventListener('click', (click) =>{
+        if (!picture_insert_mode){
+            element_move_mode_off();
+            slides_removeMode_off();
+            pictures_insert_mode_off();
+            mathfield_insert_mode_off();
+            resize_textfield_mode_off();
+            textfield_insert_mode_off();
+            all_slides_onslide_elements_pointer_events_off();
+        } else {
+            all_slides_onslide_elements_except_drawings_pointer_events_on();
+        };
         let picture_in_insert_mode_inside_check = false;
         if (picture_to_insert !== null && click.isTrusted){
             const current_picture_to_insert_back = picture_to_insert.parentElement;
@@ -693,6 +772,7 @@ function insert_picture(){
                 };
             };
         };
+        new_picture_on_slide.style.pointerEvents = 'none';
         mousedown_slide.appendChild(new_picture_on_slide);
         all_pictures_on_slides.push(new_picture_on_slide);
         new_picture_on_slide.addEventListener('click', (event: MouseEvent) =>{
@@ -742,8 +822,31 @@ function picture_insert_mode_on(){
         slide.addEventListener('click', insert_picture_const);
     });
 }
-
                         // Add/remove/move pictures btns functions end
+                        // Drawing functions start
+function activate_drawing_mode(){
+    element_move_mode_off();
+    slides_removeMode_off();
+    textfield_insert_mode_off();
+    mathfield_insert_mode_off();
+    pictures_insert_mode_off();
+    all_slides_onslide_elements_pointer_events_off();
+    if (all_canvas_fields.length > 0){
+        all_canvas_fields.forEach((canvas) =>{
+            canvas.style.pointerEvents = 'auto';
+        });
+    };
+};
+function add_free_drawing_listeners(canvas: HTMLCanvasElement){
+    canvas.addEventListener('mousedown', (d) =>{
+        current_canvas = canvas;
+    });
+    canvas.addEventListener('mousemove', (mouse_movement) =>{
+        const X_coordinate_mouse_movement = mouse_movement.offsetX;
+        const Y_coordinate_mouse_movement = mouse_movement.offsetY;
+    });
+}
+                        // Drawing functions end
 
 
 
@@ -762,6 +865,9 @@ window.addEventListener('click', (window_click) =>{
     };
     if (!context_menu_textfield_const.contains(window_click.target as Node)) {
         context_menu_textfield_const.style.display = 'none';
+    };
+    if (!context_menu_picture_const.contains(window_click.target as Node)) {
+        context_menu_picture_const.style.display = 'none';
     };
 });
 window.addEventListener('mouseup', (window_mouseup) =>{
@@ -828,39 +934,7 @@ window.addEventListener('keyup', (event) => {
 
                         // Add slide btn start
 all_slides.forEach(slide =>{
-    const slide_width = slide.getBoundingClientRect().width;
-    const slide_height = slide.getBoundingClientRect().height;
-    slide.addEventListener('click', (event) =>{
-        const slide_X_click = event.offsetX
-        const slide_Y_click = event.offsetY
-        if (slide_X_click >= -5 && slide_Y_click >= -5 && slide_X_click <= slide_width && slide_Y_click <= slide_height){
-            X_coordinate_slide_click = slide_X_click
-            Y_coordinate_slide_click = slide_Y_click
-            current_slide = slide;
-        };
-        if (element_to_move !== null) {
-            move_element_to()
-            all_slides_onslide_elements_pointer_events_on();
-        };
-    });
-    slide.addEventListener('mousedown', (event) =>{
-        const slide_Y_mousedown = event.offsetY
-        const slide_X_mousedown = event.offsetX
-        if (slide_X_mousedown >= -5 && slide_Y_mousedown >= -5 && slide_X_mousedown <= slide_width && slide_Y_mousedown <= slide_height){
-            X_mousedown = slide_X_mousedown
-            Y_mousedown = slide_Y_mousedown
-            mousedown_slide = slide;
-        };
-    });
-    slide.addEventListener('mouseup', (event) =>{
-        const slide_X_mouseup = event.offsetX
-        const slide_Y_mouseup = event.offsetY
-        if (slide_X_mouseup >= -5 && slide_Y_mouseup >= -5 && slide_X_mouseup <= slide_width && slide_Y_mouseup <= slide_height){
-            X_mouseup = slide_X_mouseup
-            Y_mouseup = slide_Y_mouseup
-            mouseup_slide = slide;
-        };
-    });
+    new_slide_add_listeners(slide);
 });
 slide_add_btn_const.addEventListener('click', () => {
     slides_removeMode_off();
@@ -868,45 +942,12 @@ slide_add_btn_const.addEventListener('click', () => {
     textfield_insert_mode_off();
     mathfield_insert_mode_off()
     all_slides_onslide_elements_pointer_events_on();
-    insert_mode_mathfield = false
     const slide = document.createElement('div');
     slide.classList.add('main_field');
     const main_field_const = document.getElementById('back_main_field') as HTMLDivElement;
     main_field_const.appendChild(slide);
     all_slides.push(slide);
-    const slide_width = slide.getBoundingClientRect().width;
-    const slide_height = slide.getBoundingClientRect().height;
-    slide.addEventListener('click', (event) =>{
-        const slide_X_click = event.offsetX
-        const slide_Y_click = event.offsetY
-        if (slide_X_click >= -5 && slide_Y_click >= -5 && slide_X_click <= slide_width && slide_Y_click <= slide_height){
-            X_coordinate_slide_click = slide_X_click
-            Y_coordinate_slide_click = slide_Y_click
-            current_slide = slide;
-        };
-        if (element_to_move !== null) {
-            all_slides_onslide_elements_pointer_events_on();
-            move_element_to()
-        };
-    });
-    slide.addEventListener('mousedown', (event) =>{
-        const slide_Y_mousedown = event.offsetY
-        const slide_X_mousedown = event.offsetX
-        if (slide_X_mousedown >= -5 && slide_Y_mousedown >= -5 && slide_X_mousedown <= slide_width && slide_Y_mousedown <= slide_height){
-            X_mousedown = slide_X_mousedown
-            Y_mousedown = slide_Y_mousedown
-            mousedown_slide = slide;
-        };
-    });
-    slide.addEventListener('mouseup', (event) =>{
-        const slide_X_mouseup = event.offsetX
-        const slide_Y_mouseup = event.offsetY
-        if (slide_X_mouseup >= -5 && slide_Y_mouseup >= -5 && slide_X_mouseup <= slide_width && slide_Y_mouseup <= slide_height){
-            X_mouseup = slide_X_mouseup
-            Y_mouseup = slide_Y_mouseup
-            mouseup_slide = slide;
-        };
-    });
+    new_slide_add_listeners(slide);
 });
                         // Add slide btn end
 
@@ -1122,5 +1163,4 @@ remove_picture_btn_const.addEventListener('click', () => {
         context_menu_picture_const.style.display = 'none';
     };
 });
-
                         // Picture insert btn end

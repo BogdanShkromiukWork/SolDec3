@@ -120,6 +120,9 @@ body {
 #text_bottom_panel_back{
   display: none;
 }
+#drawing_bottom_panel_back  {
+  display: none;
+}
                                       /* Main panels end */
                                       /* Buttons start */
 .button_common1 {
@@ -183,6 +186,7 @@ body {
   justify-self: flex-start;
 }
 .main_field {
+  z-index: 1;
   flex-shrink: 0;
   width: calc(595px);
   height: calc(842px);
@@ -192,24 +196,6 @@ body {
   position: relative;
 }
                                       /* Main field end  */
-                                      /* Intercept mode start */
-.intercept_mode_self_on{
-  pointer-events: auto !important;
-}
-.intercept_mode_self_off{
-  pointer-events: none !important;
-}
-/* .intercept_mode_child_on * {
-  pointer-events: auto !important;
-}
-.intercept_mode_child_off * {
-  pointer-events: none !important;
-}
-.insert_mode_child_off math-field {
-  pointer-events: none !important;
-  user-select: none;
-} */
-                                      /* Intercept mode end */
                                       /* Context menu start */
 .contex_menu_common_btn {
   height: 3vh;
@@ -227,7 +213,7 @@ body {
   margin: 0;
   position: absolute;
   flex-direction: column;
-  z-index: 1000;
+  z-index: 2;
 }
 #context_menu_mathfield {
   display: none;
@@ -392,3 +378,13 @@ body {
   user-select: none;
 }
                                       /* Pictures panel end */
+                                      /* Draving panel start */
+.drvaing_canvas_list {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+}
+                                      /* Draving panel end */
