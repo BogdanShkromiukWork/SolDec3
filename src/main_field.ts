@@ -8,7 +8,7 @@ let ctrl_key_pressed = false;
 const move_element_btn_const = document.getElementById('move_element_btn') as HTMLButtonElement;
                         // Context menu constants end
                         // Add/remove slide btns constants start
-let pointer_events_onslides = true;
+// let pointer_events_onslides = true;
 const slide_controllers = new Map()
 const slide_add_btn_const = document.getElementById('slide_add_btn') as HTMLButtonElement;
 const slide_remove_btn_const = document.getElementById('slide_remove_btn') as HTMLButtonElement;
@@ -62,7 +62,7 @@ let picture_insert_mode = false;
 const context_menu_picture_const = document.getElementById('context_menu_picture') as HTMLDivElement;
 const remove_picture_btn_const = document.getElementById('picture_remove_btn') as HTMLButtonElement;
 const move_picture_btn_const = document.getElementById('picture_move_btn') as HTMLButtonElement;
-const resize_picture_btn_const = document.getElementById('picture_resize_btn') as HTMLButtonElement;
+// const resize_picture_btn_const = document.getElementById('picture_resize_btn') as HTMLButtonElement;
                         // Add/remove/move pictures btns constants end
                         // Canvas constants start
 const all_canvas_fields: HTMLCanvasElement[] = [];
@@ -280,7 +280,7 @@ function all_slides_onslide_elements_except_drawings_pointer_events_off(){
     mathfields.forEach((mathfield: MathfieldElement) => {
         const mathfield_size = mathfield.getBoundingClientRect();
         const mathfield_cover = mathfield.parentElement as HTMLDivElement;
-        const mathfield_cover_childes = mathfield_cover.children;
+        // const mathfield_cover_childes = mathfield_cover.children;
         mathfield_cover.style.width = `${mathfield_size.width}px`;
         mathfield_cover.style.height = `${mathfield_size.height}px`;
         mathfield_cover.classList.add('mathfield_cover_active_status');
@@ -830,9 +830,9 @@ function picture_insert_mode_on(){
         slide.addEventListener('click', insert_picture_const);
     });
 };
-function picture_remove_from_demonstration(picture: HTMLImageElement){
+// function picture_remove_from_demonstration(picture: HTMLImageElement){
 
-}
+// }
                         // Add/remove/move pictures btns functions end
                         // Drawing functions start
 function drawing_mode_on(){
