@@ -68,7 +68,7 @@ const move_picture_btn_const = document.getElementById('picture_move_btn') as HT
 const all_canvas_fields: HTMLCanvasElement[] = [];
 let drawing_mode = false;
 let drawing_mode_general = false;
-let current_canvas: HTMLCanvasElement | null = null;
+// let current_canvas: HTMLCanvasElement | null = null;
 const activate_drawing_btn_const = document.getElementById('activate_drawing_btn') as HTMLButtonElement;
                         // Canvas constants end
                         // Context menus functions start
@@ -857,7 +857,7 @@ function add_free_drawing_listeners(canvas: HTMLCanvasElement){
         content.lineCap = 'round';
     };
     canvas.addEventListener('mousedown', (mouse_down) =>{
-        current_canvas = canvas;
+        // current_canvas = canvas;
         drawing_mode = true;
         if (mouse_down.target === canvas){
             current_drawing_coordinate_X = mouse_down.offsetX;
@@ -888,11 +888,11 @@ function add_free_drawing_listeners(canvas: HTMLCanvasElement){
             content.stroke();
         };
         drawing_mode = false;
-        current_canvas = null;
+        // current_canvas = null;
     });
     canvas.addEventListener('mouseleave', () =>{
         drawing_mode = false;
-        current_canvas = null;
+        // current_canvas = null;
     });
     canvas.style.pointerEvents = 'none';
 };
