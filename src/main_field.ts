@@ -8,6 +8,7 @@ let ctrl_key_pressed = false;
 const move_element_btn_const = document.getElementById('move_element_btn') as HTMLButtonElement;
                         // Context menu constants end
                         // Add/remove slide btns constants start
+let pointer_events_onslides = true;
 const slide_controllers = new Map()
 const slide_add_btn_const = document.getElementById('slide_add_btn') as HTMLButtonElement;
 const slide_remove_btn_const = document.getElementById('slide_remove_btn') as HTMLButtonElement;
@@ -66,7 +67,9 @@ const resize_picture_btn_const = document.getElementById('picture_resize_btn') a
                         // Canvas constants start
 const all_canvas_fields: HTMLCanvasElement[] = [];
 let drawing_mode = false;
-let current_canvas: HTMLCanvasElement | null = null;   
+let drawing_mode_general = false;
+let current_canvas: HTMLCanvasElement | null = null;
+const activate_drawing_btn_const = document.getElementById('activate_drawing_btn') as HTMLButtonElement;
                         // Canvas constants end
                         // Context menus functions start
 //.
@@ -185,7 +188,8 @@ function new_slide_add_listeners(slide: HTMLDivElement){
     new_canvas.classList.add('slide_canvas');
     all_canvas_fields.push(new_canvas);
     slide.appendChild(new_canvas);
-    new_canvas.style.pointerEvents = 'none';
+    new_canvas.style.zIndex = "1";
+    add_free_drawing_listeners(new_canvas);
 }
                         // Add/remove slide btns functions end
 
@@ -274,33 +278,34 @@ function element_move_mode_off(){
 //
 function all_slides_onslide_elements_except_drawings_pointer_events_off(){
     mathfields.forEach((mathfield: MathfieldElement) => {
-            const mathfield_size = mathfield.getBoundingClientRect();
-            const mathfield_cover = mathfield.parentElement as HTMLDivElement;
-            mathfield_cover.style.width = `${mathfield_size.width}px`;
-            mathfield_cover.style.height = `${mathfield_size.height}px`;
-            mathfield_cover.classList.add('mathfield_cover_active_status');
-            const mathfield_content_latex = mathfield.getValue('latex');
-            const mathfield_content_to_render = document.createElement('div');
-            mathfield_content_to_render.textContent = `\\(${mathfield_content_latex }\\)`;
-            mathfield_content_to_render.style.paddingLeft = "6px";
-            mathfield_content_to_render.style.pointerEvents = "none";
-            all_temporary_mathfield_content_render_elements.push(mathfield_content_to_render);
-            renderMathInElement(mathfield_content_to_render);
-            mathfield_cover.appendChild(mathfield_content_to_render);
-            (mathfield).style.display = 'none';
+        const mathfield_size = mathfield.getBoundingClientRect();
+        const mathfield_cover = mathfield.parentElement as HTMLDivElement;
+        const mathfield_cover_childes = mathfield_cover.children;
+        mathfield_cover.style.width = `${mathfield_size.width}px`;
+        mathfield_cover.style.height = `${mathfield_size.height}px`;
+        mathfield_cover.classList.add('mathfield_cover_active_status');
+        const mathfield_content_latex = mathfield.getValue('latex');
+        const mathfield_content_to_render = document.createElement('div');
+        mathfield_content_to_render.textContent = `\\(${mathfield_content_latex }\\)`;
+        mathfield_content_to_render.style.paddingLeft = "6px";
+        mathfield_content_to_render.style.pointerEvents = "none";
+        all_temporary_mathfield_content_render_elements.push(mathfield_content_to_render);
+        renderMathInElement(mathfield_content_to_render);
+        mathfield_cover.appendChild(mathfield_content_to_render);
+        (mathfield).style.display = 'none';
     });
     all_slides.forEach((slide) =>{
         Array.from(slide.children).forEach((child: any) =>{
             if (!(child instanceof HTMLCanvasElement)){
                 child.style.pointerEvents = 'none';
             };
-    });
-    if (all_pictures_on_slides.length > 0){
-        all_pictures_on_slides.forEach((picture: HTMLImageElement) =>{
-            picture.style.pointerEvents = 'none';
         });
-    };
-});
+        if (all_pictures_on_slides.length > 0){
+            all_pictures_on_slides.forEach((picture: HTMLImageElement) =>{
+                picture.style.pointerEvents = 'none';
+            });
+        };
+    });
 };
 function all_slides_onslide_elements_except_drawings_pointer_events_on(){
     mathfields.forEach((mathfield) => {
@@ -390,6 +395,7 @@ function add_mathfield (slide: HTMLDivElement){
         };
         new_mathfield_cover.appendChild(new_mathfield);
         slide.appendChild(new_mathfield_cover);
+        new_mathfield_cover.style.zIndex = "0";
         new_mathfield.classList.add('mathfield_default')
         new_mathfield.focus();
         if (!shift_key_pressed){
@@ -473,6 +479,7 @@ function textfield_insert(){
             };
         };
         mousedown_slide.appendChild(new_textfield);
+        new_textfield.style.zIndex = "0";
         new_textfield.focus();
         new_textfield.addEventListener('click', (event: MouseEvent) =>{
             current_element = new_textfield
@@ -774,6 +781,7 @@ function insert_picture(){
         };
         new_picture_on_slide.style.pointerEvents = 'none';
         mousedown_slide.appendChild(new_picture_on_slide);
+        new_picture_on_slide.style.zIndex = "0";
         all_pictures_on_slides.push(new_picture_on_slide);
         new_picture_on_slide.addEventListener('click', (event: MouseEvent) =>{
             current_element = new_picture_on_slide
@@ -821,10 +829,13 @@ function picture_insert_mode_on(){
         style_crosshair_cursor(slide);
         slide.addEventListener('click', insert_picture_const);
     });
+};
+function picture_remove_from_demonstration(picture: HTMLImageElement){
+
 }
                         // Add/remove/move pictures btns functions end
                         // Drawing functions start
-function activate_drawing_mode(){
+function drawing_mode_on(){
     element_move_mode_off();
     slides_removeMode_off();
     textfield_insert_mode_off();
@@ -836,16 +847,65 @@ function activate_drawing_mode(){
             canvas.style.pointerEvents = 'auto';
         });
     };
+    activate_drawing_btn_const.style.backgroundColor = '#858585';
 };
 function add_free_drawing_listeners(canvas: HTMLCanvasElement){
-    canvas.addEventListener('mousedown', (d) =>{
+    const content = canvas.getContext('2d')
+    let current_drawing_coordinate_X: number | null = null;
+    let current_drawing_coordinate_Y: number | null = null;
+    if (content !== null){
+        content.lineCap = 'round';
+    };
+    canvas.addEventListener('mousedown', (mouse_down) =>{
         current_canvas = canvas;
+        drawing_mode = true;
+        if (mouse_down.target === canvas){
+            current_drawing_coordinate_X = mouse_down.offsetX;
+            current_drawing_coordinate_Y = mouse_down.offsetY;
+        };
+        if (content !== null && current_drawing_coordinate_X !== null && current_drawing_coordinate_Y !== null){
+            content.beginPath();
+            content.moveTo(current_drawing_coordinate_X, current_drawing_coordinate_Y);
+        };
     });
     canvas.addEventListener('mousemove', (mouse_movement) =>{
-        const X_coordinate_mouse_movement = mouse_movement.offsetX;
-        const Y_coordinate_mouse_movement = mouse_movement.offsetY;
+        if (mouse_movement.target === canvas){
+            current_drawing_coordinate_X = mouse_movement.offsetX;
+            current_drawing_coordinate_Y = mouse_movement.offsetY;
+        };
+        if (drawing_mode && content !== null && current_drawing_coordinate_X !== null && current_drawing_coordinate_Y !== null){
+            content.lineTo(current_drawing_coordinate_X, current_drawing_coordinate_Y);
+            content.stroke();
+        };
     });
-}
+    canvas.addEventListener('mouseup', (mouse_up) =>{
+        if (mouse_up.target === canvas){
+            current_drawing_coordinate_X = mouse_up.offsetX;
+            current_drawing_coordinate_Y = mouse_up.offsetY;
+        };
+        if (drawing_mode && content !== null && current_drawing_coordinate_X !== null && current_drawing_coordinate_Y !== null){
+            content.lineTo(current_drawing_coordinate_X, current_drawing_coordinate_Y);
+            content.stroke();
+        };
+        drawing_mode = false;
+        current_canvas = null;
+    });
+    canvas.addEventListener('mouseleave', () =>{
+        drawing_mode = false;
+        current_canvas = null;
+    });
+    canvas.style.pointerEvents = 'none';
+};
+function drawing_mode_off(){
+    if (all_canvas_fields.length > 0){
+        all_canvas_fields.forEach((canvas) =>{
+            canvas.style.pointerEvents = 'none';
+        });
+    };
+    all_slides_onslide_elements_except_drawings_pointer_events_on();
+    activate_drawing_btn_const.style.backgroundColor = '#bababa';
+};
+
                         // Drawing functions end
 
 
@@ -884,14 +944,14 @@ window.addEventListener('mouseup', (window_mouseup) =>{
             return !picture_back.contains(window_mouseup.target as Node);
         };
     });
-    if (clickedOutsideAllSlides && clicked_out_all_buttons) {
+    if (clickedOutsideAllSlides && clicked_out_all_buttons && !drawing_mode_general) {
         slides_removeMode_off();
         element_move_mode_off();
         textfield_insert_mode_off();
         mathfield_insert_mode_off();
         all_slides_onslide_elements_pointer_events_on();
     };
-    if (clicked_out_all_demonstrated_pictures && clickedOutsideAllSlides){
+    if (clicked_out_all_demonstrated_pictures && clickedOutsideAllSlides && !drawing_mode_general){
         pictures_insert_mode_off();
     };
 });
@@ -1006,9 +1066,12 @@ move_element_btn_const.addEventListener('click', ()=>{
 
                         // Add mathfield btn start
 insert_mathfield_btn.addEventListener('click', ()=>{
-    textfield_insert_mode_off();
-    slides_removeMode_off();
     element_move_mode_off();
+    slides_removeMode_off();
+    pictures_insert_mode_off();
+    resize_textfield_mode_off();
+    textfield_insert_mode_off();
+    drawing_mode_off();
     all_slides.forEach(slide =>{
         if (!insert_mode_mathfield) {
             style_crosshair_cursor(slide)
@@ -1067,7 +1130,10 @@ mathfield_move_btn_const.addEventListener('click', ()=>{
 insert_textfield_btn_const.addEventListener('click', ()=>{
     element_move_mode_off();
     slides_removeMode_off();
+    pictures_insert_mode_off();
     mathfield_insert_mode_off();
+    resize_textfield_mode_off();
+    drawing_mode_off();
     all_slides_onslide_elements_pointer_events_off();
     all_slides.forEach((slide: HTMLDivElement) =>{
         if (!textfield_insert_mode) {
@@ -1130,6 +1196,13 @@ resize_textfield_btn_const.addEventListener('click', (event) => {
                         // Resize textfield end
                         // Picture insert btn start
 upload_picture_button_const.addEventListener('click', () => {
+    element_move_mode_off();
+    slides_removeMode_off();
+    pictures_insert_mode_off();
+    mathfield_insert_mode_off();
+    resize_textfield_mode_off();
+    textfield_insert_mode_off();
+    drawing_mode_off();
     picture_upload_input_const.click();
 });
 picture_upload_input_const.addEventListener('change', () => {
@@ -1164,3 +1237,21 @@ remove_picture_btn_const.addEventListener('click', () => {
     };
 });
                         // Picture insert btn end
+                        // Drawing btn start
+activate_drawing_btn_const.addEventListener('click', () => {
+    element_move_mode_off();
+    slides_removeMode_off();
+    pictures_insert_mode_off();
+    mathfield_insert_mode_off();
+    resize_textfield_mode_off();
+    textfield_insert_mode_off();
+    all_slides_onslide_elements_except_drawings_pointer_events_off();
+    if (!drawing_mode_general){
+        drawing_mode_on();
+        drawing_mode_general = true;
+    } else {
+        drawing_mode_off();
+        activate_drawing_btn_const.style.backgroundColor = '#bababa';
+        drawing_mode_general = false;
+    };
+});
