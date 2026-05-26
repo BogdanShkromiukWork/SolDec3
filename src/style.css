@@ -387,4 +387,24 @@ body {
   height: 100%;
   z-index: 10;
 }
+.slide_canvas {
+  left: 0;
+  top: 0;
+  position: absolute;
+  z-index: 1;
+};
                                       /* Draving panel end */
+                                      /* Save import export start */
+#export_btn {
+  grid-column: 3;
+  grid-row: 1;
+}
+#save_btn {
+  grid-column: 3;
+  grid-row: 1;
+}
+#import_btn {
+  grid-column: 3;
+  grid-row: 2;
+}
+                                      /* Save import export end */

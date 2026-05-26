@@ -1,3 +1,7 @@
+                        // Global variables/constants start
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+                        // Global variables/constants end
                         // Conetxt menu constants start
 const context_menu_mathfield_const = document.getElementById('context_menu_mathfield') as HTMLDivElement;
 let current_element: any = null;
@@ -68,8 +72,14 @@ const move_picture_btn_const = document.getElementById('picture_move_btn') as HT
 const all_canvas_fields: HTMLCanvasElement[] = [];
 let drawing_mode = false;
 let drawing_mode_general = false;
+// let current_canvas: HTMLCanvasElement | null = null;
 const activate_drawing_btn_const = document.getElementById('activate_drawing_btn') as HTMLButtonElement;
                         // Canvas constants end
+                        // Export/import/save constants start
+const export_btn_const = document.getElementById('export_btn') as HTMLButtonElement;
+const save_btn_const = document.getElementById('save_btn') as HTMLButtonElement;
+const import_btn_const = document.getElementById('import_btn') as HTMLButtonElement;
+                        // Export/import/save constants end
                         // Context menus functions start
 //.
                         // Context menus functions end
@@ -187,9 +197,8 @@ function new_slide_add_listeners(slide: HTMLDivElement){
     new_canvas.classList.add('slide_canvas');
     all_canvas_fields.push(new_canvas);
     slide.appendChild(new_canvas);
-    new_canvas.style.zIndex = "1";
     add_free_drawing_listeners(new_canvas);
-}
+};
                         // Add/remove slide btns functions end
 
 
@@ -840,7 +849,7 @@ function drawing_mode_on(){
     textfield_insert_mode_off();
     mathfield_insert_mode_off();
     pictures_insert_mode_off();
-    all_slides_onslide_elements_pointer_events_off();
+    all_slides_onslide_elements_except_drawings_pointer_events_off();
     if (all_canvas_fields.length > 0){
         all_canvas_fields.forEach((canvas) =>{
             canvas.style.pointerEvents = 'auto';
@@ -906,6 +915,38 @@ function drawing_mode_off(){
 };
 
                         // Drawing functions end
+                        // Export/import/save functions start
+function save_editable_file(){
+    const file_name = prompt("Enter file name");
+};
+async function export_as_pdf(){
+    all_slides_onslide_elements_pointer_events_off();
+    const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: `a4`
+    });
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    for (let i = 0; i < all_slides.length; i++){
+        const slide = all_slides[i];
+        slide.style.border = 'none';
+        const onslide_content = await html2canvas(slide, {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+        });
+        slide.style.border = '';
+        const imgData = onslide_content.toDataURL('image/jpeg', 1.0);
+        if (i > 0) {
+            pdf.addPage();
+        };
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+    }
+    const file_name = prompt("Enter file name") || 'export';
+    pdf.save(file_name + '.pdf');
+}
+                        // Export/import/save functions end
 
 
 
@@ -999,7 +1040,8 @@ slide_add_btn_const.addEventListener('click', () => {
     slides_removeMode_off();
     element_move_mode_off();
     textfield_insert_mode_off();
-    mathfield_insert_mode_off()
+    mathfield_insert_mode_off();
+    drawing_mode_off();
     all_slides_onslide_elements_pointer_events_on();
     const slide = document.createElement('div');
     slide.classList.add('main_field');
@@ -1153,12 +1195,14 @@ insert_textfield_btn_const.addEventListener('click', ()=>{
                         // Add textfield end
                         // Remove textfield start
 remove_textfield_btn_const.addEventListener('click', () => {
-    const textfield_to_remove = current_element;
-    if (textfield_to_remove !== null && textfield_to_remove instanceof HTMLParagraphElement){
-        textfield_to_remove.remove();
-        const textfield_to_remove_index = textfields.indexOf(textfield_to_remove)
-        textfields.splice(textfield_to_remove_index, 1)
-        context_menu_textfield_const.style.display = 'none';
+    if (shift_key_pressed){
+        const textfield_to_remove = current_element;
+        if (textfield_to_remove !== null && textfield_to_remove instanceof HTMLParagraphElement){
+            textfield_to_remove.remove();
+            const textfield_to_remove_index = textfields.indexOf(textfield_to_remove)
+            textfields.splice(textfield_to_remove_index, 1)
+            context_menu_textfield_const.style.display = 'none';
+        };
     };
 });
                         // Remove textfield end
@@ -1227,24 +1271,19 @@ move_picture_btn_const.addEventListener('click', (event) => {
     context_menu_picture_const.style.display = 'none';
 });
 remove_picture_btn_const.addEventListener('click', () => {
-    const picture_to_remove = current_element;
-    if (picture_to_remove !== null && picture_to_remove instanceof HTMLImageElement){
-        picture_to_remove.remove();
-        const picture_to_remove_index = all_pictures_on_slides.indexOf(picture_to_remove)
-        all_pictures_on_slides.splice(picture_to_remove_index, 1)
-        context_menu_picture_const.style.display = 'none';
+    if (shift_key_pressed){
+        const picture_to_remove = current_element;
+        if (picture_to_remove !== null && picture_to_remove instanceof HTMLImageElement){
+            picture_to_remove.remove();
+            const picture_to_remove_index = all_pictures_on_slides.indexOf(picture_to_remove)
+            all_pictures_on_slides.splice(picture_to_remove_index, 1)
+            context_menu_picture_const.style.display = 'none';
+        };
     };
 });
                         // Picture insert btn end
                         // Drawing btn start
 activate_drawing_btn_const.addEventListener('click', () => {
-    element_move_mode_off();
-    slides_removeMode_off();
-    pictures_insert_mode_off();
-    mathfield_insert_mode_off();
-    resize_textfield_mode_off();
-    textfield_insert_mode_off();
-    all_slides_onslide_elements_except_drawings_pointer_events_off();
     if (!drawing_mode_general){
         drawing_mode_on();
         drawing_mode_general = true;
@@ -1254,3 +1293,10 @@ activate_drawing_btn_const.addEventListener('click', () => {
         drawing_mode_general = false;
     };
 });
+                        // Drawing btn end
+                        // Export/import/save btns start
+export_btn_const.addEventListener('click', () => {
+    export_as_pdf();
+    all_slides_onslide_elements_pointer_events_on();
+});
+                        // Export/import/save btns end
