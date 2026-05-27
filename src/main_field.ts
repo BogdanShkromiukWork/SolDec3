@@ -1308,5 +1308,5 @@ export_btn_const.addEventListener('click', () => {
 });
                         // Export/import/save btns end
 save_btn_const.addEventListener('click', () => {
-    all_slides_onslide_elements_pointer_events_off();
+    
 });
