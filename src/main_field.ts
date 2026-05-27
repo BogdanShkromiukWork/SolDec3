@@ -78,7 +78,7 @@ const activate_drawing_btn_const = document.getElementById('activate_drawing_btn
                         // Export/import/save constants start
 const export_btn_const = document.getElementById('export_btn') as HTMLButtonElement;
 const save_btn_const = document.getElementById('save_btn') as HTMLButtonElement;
-const import_btn_const = document.getElementById('import_btn') as HTMLButtonElement;
+// const import_btn_const = document.getElementById('import_btn') as HTMLButtonElement;
                         // Export/import/save constants end
                         // Context menus functions start
 //.
@@ -288,19 +288,20 @@ function all_slides_onslide_elements_except_drawings_pointer_events_off(){
     mathfields.forEach((mathfield: MathfieldElement) => {
         const mathfield_size = mathfield.getBoundingClientRect();
         const mathfield_cover = mathfield.parentElement as HTMLDivElement;
-        // const mathfield_cover_childes = mathfield_cover.children;
-        mathfield_cover.style.width = `${mathfield_size.width}px`;
-        mathfield_cover.style.height = `${mathfield_size.height}px`;
-        mathfield_cover.classList.add('mathfield_cover_active_status');
-        const mathfield_content_latex = mathfield.getValue('latex');
-        const mathfield_content_to_render = document.createElement('div');
-        mathfield_content_to_render.textContent = `\\(${mathfield_content_latex }\\)`;
-        mathfield_content_to_render.style.paddingLeft = "6px";
-        mathfield_content_to_render.style.pointerEvents = "none";
-        all_temporary_mathfield_content_render_elements.push(mathfield_content_to_render);
-        renderMathInElement(mathfield_content_to_render);
-        mathfield_cover.appendChild(mathfield_content_to_render);
-        (mathfield).style.display = 'none';
+        if (mathfield.parentElement !== null && mathfield.parentElement.children.length === 1) {
+            mathfield_cover.style.width = `${mathfield_size.width}px`;
+            mathfield_cover.style.height = `${mathfield_size.height}px`;
+            mathfield_cover.classList.add('mathfield_cover_active_status');
+            const mathfield_content_latex = mathfield.getValue('latex');
+            const mathfield_content_to_render = document.createElement('div');
+            mathfield_content_to_render.textContent = `\\(${mathfield_content_latex }\\)`;
+            mathfield_content_to_render.style.paddingLeft = "6px";
+            mathfield_content_to_render.style.pointerEvents = "none";
+            all_temporary_mathfield_content_render_elements.push(mathfield_content_to_render);
+            renderMathInElement(mathfield_content_to_render);
+            mathfield_cover.appendChild(mathfield_content_to_render);
+            (mathfield).style.display = 'none';
+        };
     });
     all_slides.forEach((slide) =>{
         Array.from(slide.children).forEach((child: any) =>{
@@ -591,13 +592,14 @@ function resize_textfield(){
         };
     };
     resize_textfield_mode_off();
+    all_slides_onslide_elements_pointer_events_on();
 };
 function resize_textfield_mode_off(){
     slide_with_to_resize_textfield?.removeEventListener('click', resize_textfield);
     if (slide_with_to_resize_textfield !== null){
         style_default_cursor(slide_with_to_resize_textfield);
     };
-    all_slides_onslide_elements_pointer_events_on();
+    // all_slides_onslide_elements_pointer_events_on();
     slide_with_to_resize_textfield = null;
 };
                         // Add/remove/move textfield btns functions end
@@ -616,7 +618,7 @@ function uploaded_picture_demonstrate(picture: string){
     all_pictures_demonstrated.push(new_picture_demonstrated);
     let picture_in_insert_mode = false;
     new_picture_demonstrated_back.addEventListener('click', (click) =>{
-        if (!picture_insert_mode){
+        if (!picture_insert_mode && click.isTrusted){
             element_move_mode_off();
             slides_removeMode_off();
             pictures_insert_mode_off();
@@ -624,7 +626,8 @@ function uploaded_picture_demonstrate(picture: string){
             resize_textfield_mode_off();
             textfield_insert_mode_off();
             all_slides_onslide_elements_pointer_events_off();
-        } else {
+        };
+        if (picture_insert_mode && click.isTrusted){
             all_slides_onslide_elements_except_drawings_pointer_events_on();
         };
         let picture_in_insert_mode_inside_check = false;
@@ -654,10 +657,12 @@ function uploaded_picture_demonstrate(picture: string){
             picture_in_insert_mode = true;
             picture_insert_mode_on();
             picture_in_insert_mode_inside_check = true;
+            picture_insert_mode = true;
         };
         if (click.isTrusted && picture_in_insert_mode && !picture_in_insert_mode_inside_check){
             pictures_insert_mode_off();
             picture_in_insert_mode_inside_check = true;
+            picture_insert_mode = false;
         };
         picture_in_insert_mode_inside_check = false;
     });
@@ -916,35 +921,37 @@ function drawing_mode_off(){
 
                         // Drawing functions end
                         // Export/import/save functions start
-function save_editable_file(){
-    const file_name = prompt("Enter file name");
-};
+// function save_editable_file(){
+//     const file_name = prompt("Enter file name");
+// };
 async function export_as_pdf(){
     all_slides_onslide_elements_pointer_events_off();
-    const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'px',
-        format: `a4`
-    });
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-    for (let i = 0; i < all_slides.length; i++){
-        const slide = all_slides[i];
-        slide.style.border = 'none';
-        const onslide_content = await html2canvas(slide, {
-            scale: 2,
-            useCORS: true,
-            logging: false,
+    document.fonts.ready.then(async function() {
+        const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'px',
+            format: `a4`
         });
-        slide.style.border = '';
-        const imgData = onslide_content.toDataURL('image/jpeg', 1.0);
-        if (i > 0) {
-            pdf.addPage();
-        };
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-    }
-    const file_name = prompt("Enter file name") || 'export';
-    pdf.save(file_name + '.pdf');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        for (let i = 0; i < all_slides.length; i++){
+            const slide = all_slides[i];
+            slide.style.border = 'none';
+            const onslide_content = await html2canvas(slide, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+            });
+            slide.style.border = '';
+            const imgData = onslide_content.toDataURL('image/jpeg', 1.0);
+            if (i > 0) {
+                pdf.addPage();
+            };
+            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+        }
+        const file_name = prompt("Enter file name") || 'export';
+        pdf.save(file_name + '.pdf');
+    });
 }
                         // Export/import/save functions end
 
@@ -984,7 +991,7 @@ window.addEventListener('mouseup', (window_mouseup) =>{
             return !picture_back.contains(window_mouseup.target as Node);
         };
     });
-    if (clickedOutsideAllSlides && clicked_out_all_buttons && !drawing_mode_general) {
+    if (clickedOutsideAllSlides && clicked_out_all_buttons && clicked_out_all_demonstrated_pictures && !drawing_mode_general) {
         slides_removeMode_off();
         element_move_mode_off();
         textfield_insert_mode_off();
@@ -1300,3 +1307,6 @@ export_btn_const.addEventListener('click', () => {
     all_slides_onslide_elements_pointer_events_on();
 });
                         // Export/import/save btns end
+save_btn_const.addEventListener('click', () => {
+    all_slides_onslide_elements_pointer_events_off();
+});
