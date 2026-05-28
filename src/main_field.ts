@@ -1061,6 +1061,10 @@ window.addEventListener('keyup', (event) => {
         ctrl_key_pressed = false;
     }
 });
+window.addEventListener('beforeunload', (event) => {
+    event.preventDefault();
+    event.returnValue = true; 
+});
                         // Window listener end
 
 
