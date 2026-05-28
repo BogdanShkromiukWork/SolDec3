@@ -392,7 +392,28 @@ body {
   top: 0;
   position: absolute;
   z-index: 1;
-};
+}
+.drawing_panel_grid {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: calc(20vh/3);
+  place-items: center;
+  background-color: transparent;
+}
+.drawing_range_grid {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: calc(40vh/3);
+  place-items: center;
+  background-color: transparent;
+}
+.vertical_range_common {
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
+  height: 10vh;
+}
                                       /* Draving panel end */
                                       /* Save import export start */
 #export_btn {

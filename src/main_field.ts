@@ -72,8 +72,20 @@ const move_picture_btn_const = document.getElementById('picture_move_btn') as HT
 const all_canvas_fields: HTMLCanvasElement[] = [];
 let drawing_mode = false;
 let drawing_mode_general = false;
-// let current_canvas: HTMLCanvasElement | null = null;
+let pencil_size = 2;
+let eraser_size = 10;
+let line_size = 2;
 const activate_drawing_btn_const = document.getElementById('activate_drawing_btn') as HTMLButtonElement;
+let pencil_mode = false;
+let eraser_mode = false;
+let line_mode = false;
+let pen_er_mode = false;
+const pencil_btn_const = document.getElementById('pencil_btn') as HTMLButtonElement;
+const eraser_btn_const = document.getElementById('eraser_btn') as HTMLButtonElement;
+const line_btn_const = document.getElementById('line_btn') as HTMLButtonElement;
+const pencil_range_input_const = document.getElementById('pencil_range_input') as HTMLInputElement;
+const eraser_range_input_const = document.getElementById('eraser_range_input') as HTMLInputElement;
+const line_range_input_const = document.getElementById('line_range_input') as HTMLInputElement;
                         // Canvas constants end
                         // Export/import/save constants start
 const export_btn_const = document.getElementById('export_btn') as HTMLButtonElement;
@@ -870,6 +882,16 @@ function add_free_drawing_listeners(canvas: HTMLCanvasElement){
         content.lineCap = 'round';
     };
     canvas.addEventListener('mousedown', (mouse_down) =>{
+        if (content!== null && pencil_mode){
+            content.globalCompositeOperation = 'source-over';
+            content.lineWidth = pencil_size;
+        } else if (content!== null && eraser_mode){
+            content.globalCompositeOperation = 'destination-out';
+            content.lineWidth = eraser_size;
+        };
+        if (pencil_mode || eraser_mode){
+            pen_er_mode = true;
+        };
         // current_canvas = canvas;
         drawing_mode = true;
         if (mouse_down.target === canvas){
@@ -886,7 +908,7 @@ function add_free_drawing_listeners(canvas: HTMLCanvasElement){
             current_drawing_coordinate_X = mouse_movement.offsetX;
             current_drawing_coordinate_Y = mouse_movement.offsetY;
         };
-        if (drawing_mode && content !== null && current_drawing_coordinate_X !== null && current_drawing_coordinate_Y !== null){
+        if (pen_er_mode && drawing_mode && content !== null && current_drawing_coordinate_X !== null && current_drawing_coordinate_Y !== null){
             content.lineTo(current_drawing_coordinate_X, current_drawing_coordinate_Y);
             content.stroke();
         };
@@ -896,11 +918,12 @@ function add_free_drawing_listeners(canvas: HTMLCanvasElement){
             current_drawing_coordinate_X = mouse_up.offsetX;
             current_drawing_coordinate_Y = mouse_up.offsetY;
         };
-        if (drawing_mode && content !== null && current_drawing_coordinate_X !== null && current_drawing_coordinate_Y !== null){
+        if (pen_er_mode && drawing_mode && content !== null && current_drawing_coordinate_X !== null && current_drawing_coordinate_Y !== null){
             content.lineTo(current_drawing_coordinate_X, current_drawing_coordinate_Y);
             content.stroke();
         };
         drawing_mode = false;
+        pen_er_mode = false;
         // current_canvas = null;
     });
     canvas.addEventListener('mouseleave', () =>{
@@ -917,6 +940,13 @@ function drawing_mode_off(){
     };
     all_slides_onslide_elements_except_drawings_pointer_events_on();
     activate_drawing_btn_const.style.backgroundColor = '#bababa';
+    pen_er_mode = false;
+    pencil_mode = false;
+    eraser_mode = false;
+    line_mode = false;
+    pencil_btn_const.style.backgroundColor = '#bababa';
+    eraser_btn_const.style.backgroundColor = '#bababa';
+    line_btn_const.style.backgroundColor = '#bababa';
 };
 
                         // Drawing functions end
@@ -953,6 +983,9 @@ async function export_as_pdf(){
         pdf.save(file_name + '.pdf');
     });
 }
+// async function save_editable_file(){
+    
+// }
                         // Export/import/save functions end
 
 
@@ -1300,6 +1333,90 @@ activate_drawing_btn_const.addEventListener('click', () => {
         drawing_mode_general = false;
     };
 });
+pencil_btn_const.addEventListener('click', () => {
+    if (!pencil_mode){
+        pencil_mode = true;
+        eraser_mode = false;
+        line_mode = false;
+        pencil_btn_const.style.backgroundColor = '#858585';
+        eraser_btn_const.style.backgroundColor = '#bababa';
+        line_btn_const.style.backgroundColor = '#bababa';
+    } else {
+        pencil_mode = true;
+        eraser_mode = false;
+        line_mode = false;
+        pencil_btn_const.style.backgroundColor = '#bababa';
+        eraser_btn_const.style.backgroundColor = '#bababa';
+        line_btn_const.style.backgroundColor = '#bababa';
+    };
+});
+eraser_btn_const.addEventListener('click', () => {
+    if (!eraser_mode){
+        pencil_mode = false;
+        eraser_mode = true;
+        line_mode = false;
+        pencil_btn_const.style.backgroundColor = '#bababa';
+        eraser_btn_const.style.backgroundColor = '#858585';
+        line_btn_const.style.backgroundColor = '#bababa';
+    } else {
+        pencil_mode = false;
+        eraser_mode = false;
+        line_mode = false;
+        eraser_btn_const.style.backgroundColor = '#bababa';
+        pencil_btn_const.style.backgroundColor = '#bababa';
+        line_btn_const.style.backgroundColor = '#bababa';
+    };
+});
+line_btn_const.addEventListener('click', () => {
+    if (!line_mode){
+        pencil_mode = false;
+        eraser_mode = false;
+        line_mode = true;
+        pencil_btn_const.style.backgroundColor = '#bababa';
+        eraser_btn_const.style.backgroundColor = '#bababa';
+        line_btn_const.style.backgroundColor = '#858585';
+    } else {
+        pencil_mode = false;
+        eraser_mode = false;
+        line_mode = false;
+        eraser_btn_const.style.backgroundColor = '#bababa';
+        pencil_btn_const.style.backgroundColor = '#bababa';
+        line_btn_const.style.backgroundColor = '#bababa';
+    };
+});
+line_range_input_const.addEventListener('input', () => {
+    line_size = parseInt(line_range_input_const.value);
+    if (!line_mode){
+        pencil_mode = false;
+        eraser_mode = false;
+        line_mode = true;
+        pencil_btn_const.style.backgroundColor = '#bababa';
+        eraser_btn_const.style.backgroundColor = '#bababa';
+        line_btn_const.style.backgroundColor = '#858585';
+    };
+});
+pencil_range_input_const.addEventListener('input', () => {
+    pencil_size = parseInt(pencil_range_input_const.value);
+    if (!pencil_mode){
+        pencil_mode = true;
+        eraser_mode = false;
+        line_mode = false;
+        pencil_btn_const.style.backgroundColor = '#858585';
+        eraser_btn_const.style.backgroundColor = '#bababa';
+        line_btn_const.style.backgroundColor = '#bababa';
+    }
+});
+eraser_range_input_const.addEventListener('input', () => {
+    eraser_size = parseInt(eraser_range_input_const.value);
+    if (!eraser_mode){
+        pencil_mode = false;
+        eraser_mode = true;
+        line_mode = false;
+        pencil_btn_const.style.backgroundColor = '#bababa';
+        eraser_btn_const.style.backgroundColor = '#858585';
+        line_btn_const.style.backgroundColor = '#bababa';
+    }
+});
                         // Drawing btn end
                         // Export/import/save btns start
 export_btn_const.addEventListener('click', () => {
@@ -1308,5 +1425,10 @@ export_btn_const.addEventListener('click', () => {
 });
                         // Export/import/save btns end
 save_btn_const.addEventListener('click', () => {
-    
+    const canvas_test = all_canvas_fields[0];
+    const textfield_test = textfields[0];
+    if (canvas_test !== undefined && textfield_test !== undefined){
+        const canvas_test_url = canvas_test.toDataURL();
+        textfield_test.textContent = canvas_test_url;
+    };
 });

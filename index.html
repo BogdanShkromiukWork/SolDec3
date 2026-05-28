@@ -201,6 +201,16 @@
       <div class="insert_remove_change_field_btn_back">
         <button class="button_common1" id="activate_drawing_btn">activate drawing</button>
       </div>
+      <div class="drawing_panel_grid">
+        <button class="button_common1" id="pencil_btn">pencil</button>
+        <button class="button_common1" id="eraser_btn">eraser</button>
+        <button class="button_common1" id="line_btn">line</button>
+      </div>
+      <div class="drawing_range_grid">
+        <input type="range" class="vertical_range_common" id="pencil_range_input" min="1" max="20" value="2">
+        <input type="range" class="vertical_range_common" id="eraser_range_input" min="1" max="40" value="10">
+        <input type="range" class="vertical_range_common" id="line_range_input" min="1" max="20" value="2">
+      </div>
     </div>
     <div id="back_main_field">
       <div class="main_field">
@@ -221,6 +231,7 @@
       <button class="contex_menu_common_btn" id="picture_remove_btn">remove picture</button>
     </div>
     <input type="file" id="picture_upload_input" multiple accept="image/*" style="display: none;" />
+    <input type="file" id="file_upload_input" accept="application/json" style="display: none;" />
   </body>
 </html>
 <!-- 
