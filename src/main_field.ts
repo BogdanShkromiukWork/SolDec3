@@ -1809,7 +1809,7 @@ upload_file_btn_const.addEventListener('click', () => {
 file_upload_input_const.addEventListener('change', (event) => {
     all_slides.forEach(slide => {
         slide.remove();
-        all_slides.splice(all_slides.indexOf(slide), 1);
     });
+    all_slides.length = 0;
     read_file(event);
 });
