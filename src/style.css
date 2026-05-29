@@ -224,6 +224,11 @@ body {
 #context_menu_picture {
   display: none;
 }
+.textfield_on_slide {
+  position: absolute;
+  border: 1px solid black;
+  margin: 0px;
+}
                                       /* Context menu end */
                                       /* Content fields start */
 .mathfield_default {

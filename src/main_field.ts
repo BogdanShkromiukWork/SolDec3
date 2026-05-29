@@ -1,5 +1,6 @@
                         // Global variables/constants start
 import html2canvas from 'html2canvas';
+// import { image } from 'html2canvas/dist/types/css/types/image';
 import jsPDF from 'jspdf';
                         // Global variables/constants end
                         // Conetxt menu constants start
@@ -451,10 +452,9 @@ function mathfield_insert_mode_off (){
 function textfield_insert(){
     if (mousedown_slide === mouseup_slide && mousedown_slide !== null && mouseup_slide !== null && textfield_insert_mode){
         const new_textfield = document.createElement('p');
+        new_textfield.classList.add('textfield_on_slide');
         new_textfield.contentEditable = "true";
-        new_textfield.style.position='absolute';
-        new_textfield.style.border = "1px solid black";
-        new_textfield.style.margin = "0px";
+        new_textfield.style.zIndex = "0";
         let X_textfield = Math.min(X_mousedown!, X_mouseup!);
         let Y_textfield = Math.min(Y_mousedown!, Y_mouseup!);
         let width_textfield = Math.abs(X_mousedown! - X_mouseup!);
@@ -502,7 +502,6 @@ function textfield_insert(){
             };
         };
         mousedown_slide.appendChild(new_textfield);
-        new_textfield.style.zIndex = "0";
         new_textfield.focus();
         new_textfield.addEventListener('click', (event: MouseEvent) =>{
             current_element = new_textfield
@@ -877,6 +876,7 @@ function drawing_mode_on(){
     activate_drawing_btn_const.style.backgroundColor = '#858585';
 };
 function add_free_drawing_listeners(canvas: HTMLCanvasElement){
+    canvas.classList.add('canvas_on_slide');
     const content = canvas.getContext('2d')
     let current_drawing_coordinate_X: number | null = null;
     let current_drawing_coordinate_Y: number | null = null;
@@ -1025,6 +1025,7 @@ function imported_slide_add_listeners(slide: HTMLDivElement){
 };
 function add_free_drawing_listeners_imported_canvas(canvas: HTMLCanvasElement, imported_content_base64: string | null){
     const content = canvas.getContext('2d')
+    canvas.classList.add('canvas_on_slide');
     let current_drawing_coordinate_X: number | null = null;
     let current_drawing_coordinate_Y: number | null = null;
     if (content !== null){
@@ -1086,31 +1087,104 @@ function add_free_drawing_listeners_imported_canvas(canvas: HTMLCanvasElement, i
     };
     canvas.style.pointerEvents = 'none';
 };
-// function add_listeners_imported_textfield(textfield: HTMLParagraphElement){
-//         textfield.style.zIndex = "0";
-//         textfield.addEventListener('click', (event: MouseEvent) =>{
-//             current_element = textfield
-//             event.stopPropagation();
-//             if (element_move_mode){
-//                 element_to_move = current_element
-//                 all_slides.forEach((slide) =>{
-//                     style_crosshair_cursor(slide);
-//                 });
-//                 all_slides_onslide_elements_pointer_events_off();
-//             };
-//         });
-//         textfield.addEventListener('contextmenu', (context_menu_click) => {
-//             context_menu_click.stopPropagation();
-//             context_menu_click.preventDefault();
-//             context_menu_textfield_const.style.display = 'flex';
-//             context_menu_textfield_const.style.left = `${context_menu_click.pageX}px`;
-//             context_menu_textfield_const.style.top = `${context_menu_click.pageY}px`;
-//             current_element = textfield
-//             context_menu_mathfield_const.style.display = 'none';
-//             context_menu_picture_const.style.display = 'none';
-//         }, true);
-//         textfields.push(textfield)
-// }
+function add_listeners_imported_textfield(textfield: HTMLParagraphElement, X_textfield: number, Y_textfield: number, width_textfield: number, height_textfield: number, content: string){
+        textfield.style.zIndex = "0";
+        textfield.addEventListener('click', (event: MouseEvent) =>{
+            current_element = textfield
+            event.stopPropagation();
+            if (element_move_mode){
+                element_to_move = current_element
+                all_slides.forEach((slide) =>{
+                    style_crosshair_cursor(slide);
+                });
+                all_slides_onslide_elements_pointer_events_off();
+            };
+        });
+        textfield.addEventListener('contextmenu', (context_menu_click) => {
+            context_menu_click.stopPropagation();
+            context_menu_click.preventDefault();
+            context_menu_textfield_const.style.display = 'flex';
+            context_menu_textfield_const.style.left = `${context_menu_click.pageX}px`;
+            context_menu_textfield_const.style.top = `${context_menu_click.pageY}px`;
+            current_element = textfield
+            context_menu_mathfield_const.style.display = 'none';
+            context_menu_picture_const.style.display = 'none';
+        }, true);
+        textfield.style.left = `${X_textfield}px`;
+        textfield.style.top = `${Y_textfield}px`;
+        textfield.style.width = `${width_textfield}px`;
+        textfield.style.minHeight = `${height_textfield}px`;
+        textfield.textContent = content;
+        textfield.classList.add('textfield_on_slide');
+        textfield.contentEditable = "true";
+        textfields.push(textfield);
+};
+function add_listeners_imported_mathfield(slide: HTMLDivElement, mathfield: MathfieldElement, X_mathfield: number, Y_mathfield: number, content: string){
+    mathfields.push(mathfield);
+    mathfield.addEventListener('contextmenu', (context_menu_click: MouseEvent) => {
+        context_menu_click.stopPropagation();
+        context_menu_click.preventDefault();
+        context_menu_mathfield_const.style.display = 'flex';
+        context_menu_mathfield_const.style.left = `${context_menu_click.pageX}px`;
+        context_menu_mathfield_const.style.top = `${context_menu_click.pageY}px`;
+        current_element = (context_menu_click.target as HTMLElement).closest('.mathfield_cover');
+        context_menu_textfield_const.style.display = 'none';
+        context_menu_picture_const.style.display = 'none';
+    });
+    mathfield.addEventListener('click', (event: MouseEvent) =>{
+        current_element = (event.target as HTMLElement).closest('.mathfield_cover');
+        if (element_move_mode){
+            all_slides_onslide_elements_pointer_events_off();
+            event.stopPropagation();
+            element_to_move = current_element
+            all_slides.forEach((slide_1) =>{
+                style_crosshair_cursor(slide_1);
+            });
+        };
+    });
+    const new_mathfield_cover: HTMLDivElement = document.createElement('div');
+    new_mathfield_cover.classList.add('mathfield_cover');
+    new_mathfield_cover.style.position='absolute';
+    new_mathfield_cover.style.left = `${X_mathfield}px`;
+    new_mathfield_cover.style.top = `${Y_mathfield}px`;
+    new_mathfield_cover.appendChild(mathfield);
+    mathfield.value = content;
+    mathfield.classList.add('mathfield_default')
+    slide.appendChild(new_mathfield_cover);
+};
+function add_listeners_imported_picture(slide: HTMLDivElement, image: HTMLImageElement, X_image: number, Y_image: number, width_image: number, height_image: number, url_image: string){
+    image.classList.add('picture_on_slide');
+    image.style.position = 'absolute';
+    image.style.left = `${X_image}px`;
+    image.style.top = `${Y_image}px`;
+    image.style.width = `${width_image}px`;
+    image.style.height = `${height_image}px`;
+    image.style.zIndex = "0";
+    all_pictures_on_slides.push(image);
+    image.addEventListener('click', (event: MouseEvent) =>{
+        current_element = image
+        event.stopPropagation();
+        if (element_move_mode){
+            element_to_move = current_element
+            all_slides.forEach((slide) =>{
+                style_crosshair_cursor(slide);
+            });
+            all_slides_onslide_elements_pointer_events_off();
+        };
+    });
+    image.addEventListener('contextmenu', (context_menu_click) => {
+        context_menu_click.stopPropagation();
+        context_menu_click.preventDefault();
+        context_menu_picture_const.style.display = 'flex';
+        context_menu_picture_const.style.left = `${context_menu_click.pageX}px`;
+        context_menu_picture_const.style.top = `${context_menu_click.pageY}px`;
+        current_element = image
+        context_menu_mathfield_const.style.display = 'none';
+        context_menu_textfield_const.style.display = 'none';
+    }, true);
+    image.src = url_image;
+    slide.appendChild(image);
+};
 function read_file(event: Event){
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file){
@@ -1118,7 +1192,6 @@ function read_file(event: Event){
     };
     const reader = new FileReader();
     reader.onload = function(e){
-            alert("hi")
         const data = JSON.parse(e.target?.result as string);
         render_imported_data(data);
     };
@@ -1129,9 +1202,9 @@ function render_imported_data(data: any){
         for (const slide_ID in data.slides){
             const slide = document.createElement('div');
             slide.classList.add('main_field');
-            imported_slide_add_listeners(slide);
             main_field_const.appendChild(slide);
             all_slides.push(slide);
+            imported_slide_add_listeners(slide);
             const slide_data = data.slides[slide_ID];
             const slide_width = slide.getBoundingClientRect().width;
             const slide_height = slide.getBoundingClientRect().height;
@@ -1142,9 +1215,104 @@ function render_imported_data(data: any){
             add_free_drawing_listeners_imported_canvas(imported_slide_canvas, base64_canvas);
             all_canvas_fields.push(imported_slide_canvas);
             slide.appendChild(imported_slide_canvas);
+            for (const textfield_ID in slide_data.textfields){
+                const textfield_data = slide_data.textfields[textfield_ID];
+                const X_textfield = textfield_data.X_textfield;
+                const Y_textfield = textfield_data.Y_textfield;
+                const width_textfield = textfield_data.width_textfield;
+                const height_textfield = textfield_data.height_textfield;
+                const textfield_content = textfield_data.content;
+                const new_textfield = document.createElement('p');
+                add_listeners_imported_textfield(new_textfield, X_textfield, Y_textfield, width_textfield, height_textfield, textfield_content);
+                slide.appendChild(new_textfield);
+                textfields.push(new_textfield);
+            };
+            for (const mathfield_ID in slide_data.mathfields){
+                const mathfield_data = slide_data.mathfields[mathfield_ID];
+                const X_mathfield = mathfield_data.X_mathfield;
+                const Y_mathfield = mathfield_data.Y_mathfield;
+                const mathfield_content = mathfield_data.content;
+                const mathfield = document.createElement('math-field') as MathfieldElement;
+                add_listeners_imported_mathfield(slide, mathfield, X_mathfield, Y_mathfield, mathfield_content);
+            };
+            for (const image_ID in slide_data.images){
+                const image_data = slide_data.images[image_ID];
+                const X_image = image_data.X_image;
+                const Y_image = image_data.Y_image;
+                const width_image = image_data.width_image;
+                const height_image = image_data.height_image;
+                const url_image = image_data.url_image;
+                const imported_image = new Image();
+                add_listeners_imported_picture(slide, imported_image, X_image, Y_image, width_image, height_image, url_image);
+            };
         };
-    }
+    };
+};
+function export_as_json(){
+    const save_data: any = {
+        slides: {}
+    };
+    all_slides.forEach((slide, index) =>{
+        const slide_ID = `slide_${index+1}`;
+        save_data.slides[slide_ID] = {
+            id: slide_ID,
+            textfields: {},
+            mathfields: {},
+            images: {},
+            canvas: {}
+        };
+        const current_slide_data = save_data.slides[slide_ID];
+        const textfields_on_slide = slide.querySelectorAll('.textfield_on_slide') as NodeListOf<HTMLParagraphElement>;
+        textfields_on_slide.forEach((textfield, textfield_index) =>{
+            const textfield_ID = `textfield_${textfield_index+1}`;
+            current_slide_data.textfields[textfield_ID] = {
+                X_textfield: parseFloat(textfield.style.left) || 0,
+                Y_textfield: parseFloat(textfield.style.top) || 0,
+                width_textfield: parseFloat(textfield.style.width) || 0,
+                height_textfield: parseFloat(textfield.style.minHeight) || 0,
+                content: textfield.textContent || ""
+            };
+        });
+        const mathfield_covers_on_slide = slide.querySelectorAll('.mathfield_cover') as NodeListOf<HTMLDivElement>;
+        mathfield_covers_on_slide.forEach((mathfield_cover, mathfield_index) =>{
+            const mathfield_ID = `mathfield_${mathfield_index+1}`;
+            const mathfield = mathfield_cover.firstElementChild as MathfieldElement;
+            current_slide_data.mathfields[mathfield_ID] = {
+                X_mathfield: parseFloat(mathfield_cover.style.left) || 0,
+                Y_mathfield: parseFloat(mathfield_cover.style.top) || 0,
+                content: mathfield.value || ""
+            };
+        });
+        const images_on_slide = slide.querySelectorAll('.picture_on_slide') as NodeListOf<HTMLImageElement>;
+        images_on_slide.forEach((image, image_index) =>{
+            const image_ID = `image_${image_index+1}`;
+            current_slide_data.images[image_ID] = {
+                X_image: parseFloat(image.style.left) || 0,
+                Y_image: parseFloat(image.style.top) || 0,
+                width_image: parseFloat(image.style.width) || 0,
+                height_image: parseFloat(image.style.height) || 0,
+                url_image: image.src || ""
+            };
+        });
+        const canvas_on_slide = slide.querySelector('.canvas_on_slide') as HTMLCanvasElement;
+        if (canvas_on_slide !== null){
+            current_slide_data.canvas = {
+                url: canvas_on_slide.toDataURL()
+            };
+        };
+    });
+    const JSON_data = JSON.stringify(save_data);
+    const blob = new Blob([JSON_data], {type: 'application/json'});
+    const temporary_link = document.createElement('a');
+    temporary_link.href = URL.createObjectURL(blob);
+    const file_name = prompt("Enter file name") || 'export';
+    temporary_link.download = file_name + '.json';
+    document.body.appendChild(temporary_link);
+    temporary_link.click();
+    document.body.removeChild(temporary_link);
+    URL.revokeObjectURL(temporary_link.href);
 }
+
                         // Export/import/save functions end
 
 
@@ -1339,13 +1507,16 @@ insert_mathfield_btn.addEventListener('click', ()=>{
 mathfield_remove_btn_const.addEventListener('click', ()=>{
     mathfield_to_remove_cover = current_element;
     mathfield_to_remove = mathfield_to_remove_cover?.firstElementChild as MathfieldElement || null;
-    if (mathfield_to_remove_cover !== null && mathfield_to_remove_cover.firstElementChild instanceof MathfieldElement && mathfield_to_remove !== null){
+    if (mathfield_to_remove_cover !== null && mathfield_to_remove_cover.firstElementChild instanceof MathfieldElement && mathfield_to_remove !== null && shift_key_pressed){
         mathfield_to_remove_cover.remove();
         mathfield_slide_insert_controllers.delete(mathfield_to_remove);
         const mathfield_to_remove_index = mathfields.indexOf(mathfield_to_remove)
         mathfields.splice(mathfield_to_remove_index, 1)
         mathfield_to_remove = null;
         context_menu_mathfield_const.style.display = 'none';
+    };
+    if(mathfield_to_remove_cover !== null && mathfield_to_remove_cover.firstElementChild instanceof MathfieldElement && mathfield_to_remove !== null && !shift_key_pressed){
+    alert("Hold Shift and click 'Remove' to delete the mathfield");
     };
 });
                         // Remove mathfield btn end
@@ -1404,6 +1575,11 @@ remove_textfield_btn_const.addEventListener('click', () => {
             const textfield_to_remove_index = textfields.indexOf(textfield_to_remove)
             textfields.splice(textfield_to_remove_index, 1)
             context_menu_textfield_const.style.display = 'none';
+        };
+    } else {
+        const textfield_to_remove = current_element
+        if (textfield_to_remove !== null && textfield_to_remove instanceof HTMLParagraphElement){
+            alert("Hold Shift and click 'Remove' to delete the textfield");
         };
     };
 });
@@ -1481,7 +1657,13 @@ remove_picture_btn_const.addEventListener('click', () => {
             all_pictures_on_slides.splice(picture_to_remove_index, 1)
             context_menu_picture_const.style.display = 'none';
         };
-    };
+    } else {
+        const picture_to_remove = current_element;
+        if (picture_to_remove !== null && picture_to_remove instanceof HTMLImageElement){
+            alert("Hold Shift and click 'Remove' to delete the picture");
+        }
+    }
+
 });
                         // Picture insert btn end
                         // Drawing btn start
@@ -1511,6 +1693,10 @@ pencil_btn_const.addEventListener('click', () => {
         eraser_btn_const.style.backgroundColor = '#bababa';
         line_btn_const.style.backgroundColor = '#bababa';
     };
+    if (!drawing_mode_general){
+        drawing_mode_on();
+        drawing_mode_general = true;
+    };
 });
 eraser_btn_const.addEventListener('click', () => {
     if (!eraser_mode){
@@ -1527,6 +1713,10 @@ eraser_btn_const.addEventListener('click', () => {
         eraser_btn_const.style.backgroundColor = '#bababa';
         pencil_btn_const.style.backgroundColor = '#bababa';
         line_btn_const.style.backgroundColor = '#bababa';
+    };
+    if (!drawing_mode_general){
+        drawing_mode_on();
+        drawing_mode_general = true;
     };
 });
 line_btn_const.addEventListener('click', () => {
@@ -1545,6 +1735,10 @@ line_btn_const.addEventListener('click', () => {
         pencil_btn_const.style.backgroundColor = '#bababa';
         line_btn_const.style.backgroundColor = '#bababa';
     };
+    if (!drawing_mode_general){
+        drawing_mode_on();
+        drawing_mode_general = true;
+    };
 });
 line_range_input_const.addEventListener('input', () => {
     // line_size = parseInt(line_range_input_const.value);
@@ -1556,6 +1750,10 @@ line_range_input_const.addEventListener('input', () => {
         eraser_btn_const.style.backgroundColor = '#bababa';
         line_btn_const.style.backgroundColor = '#858585';
     };
+    if (!drawing_mode_general){
+        drawing_mode_on();
+        drawing_mode_general = true;
+    };
 });
 pencil_range_input_const.addEventListener('input', () => {
     pencil_size = parseInt(pencil_range_input_const.value);
@@ -1566,7 +1764,11 @@ pencil_range_input_const.addEventListener('input', () => {
         pencil_btn_const.style.backgroundColor = '#858585';
         eraser_btn_const.style.backgroundColor = '#bababa';
         line_btn_const.style.backgroundColor = '#bababa';
-    }
+    };
+    if (!drawing_mode_general){
+        drawing_mode_on();
+        drawing_mode_general = true;
+    };
 });
 eraser_range_input_const.addEventListener('input', () => {
     eraser_size = parseInt(eraser_range_input_const.value);
@@ -1577,7 +1779,11 @@ eraser_range_input_const.addEventListener('input', () => {
         pencil_btn_const.style.backgroundColor = '#bababa';
         eraser_btn_const.style.backgroundColor = '#858585';
         line_btn_const.style.backgroundColor = '#bababa';
-    }
+    };
+    if (!drawing_mode_general){
+        drawing_mode_on();
+        drawing_mode_general = true;
+    };
 });
                         // Drawing btn end
                         // Export/import/save btns start
@@ -1587,12 +1793,15 @@ export_btn_const.addEventListener('click', () => {
 });
                         // Export/import/save btns end
 save_btn_const.addEventListener('click', () => {
-    const canvas_test = all_canvas_fields[0];
-    const textfield_test = textfields[0];
-    if (canvas_test !== undefined && textfield_test !== undefined){
-        const canvas_test_url = canvas_test.toDataURL();
-        textfield_test.textContent = canvas_test_url;
-    };
+    textfield_insert_mode_off();
+    mathfield_insert_mode_off();
+    resize_textfield_mode_off();
+    element_move_mode_off();
+    pictures_insert_mode_off();
+    drawing_mode_off();
+    slides_removeMode_off();
+    all_slides_onslide_elements_pointer_events_on();
+    export_as_json();
 });
 upload_file_btn_const.addEventListener('click', () => {
     file_upload_input_const.click();
