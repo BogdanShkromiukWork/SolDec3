@@ -188,8 +188,8 @@ body {
 .main_field {
   z-index: 1;
   flex-shrink: 0;
-  width: calc(595px);
-  height: calc(842px);
+  width: 595px;
+  height: 842px;
   background-color: white;
   border: solid 5px #BAB6B6;
   overscroll-behavior: none;
@@ -260,6 +260,9 @@ body {
   display: none !important;
   visibility: hidden;
   width: 0;
+}
+.mathfield_hidden {
+  display: none !important;
 }
                                       /* Constnt fields end */
                                       /*Functions panel bottom start */

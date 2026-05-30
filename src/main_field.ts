@@ -68,7 +68,8 @@ let picture_insert_mode = false;
 const context_menu_picture_const = document.getElementById('context_menu_picture') as HTMLDivElement;
 const remove_picture_btn_const = document.getElementById('picture_remove_btn') as HTMLButtonElement;
 const move_picture_btn_const = document.getElementById('picture_move_btn') as HTMLButtonElement;
-// const resize_picture_btn_const = document.getElementById('picture_resize_btn') as HTMLButtonElement;
+const resize_picture_btn_const = document.getElementById('picture_resize_btn') as HTMLButtonElement;
+let slide_with_to_resize_picture: HTMLDivElement | null = null;
                         // Add/remove/move pictures btns constants end
                         // Canvas constants start
 const all_canvas_fields: HTMLCanvasElement[] = [];
@@ -219,8 +220,8 @@ function new_slide_add_listeners(slide: HTMLDivElement){
                         // Move field functions start
 function move_element_to(){
     if (current_slide !== null && element_to_move !== null){
-        const current_slide_width = current_slide.getBoundingClientRect().width - 10;
-        const current_slide_height = current_slide.getBoundingClientRect().height - 10;
+        const current_slide_width = current_slide.clientWidth;
+        const current_slide_height = current_slide.clientHeight;
         const element_to_move_width = element_to_move.getBoundingClientRect().width;
         const element_to_move_height = element_to_move.getBoundingClientRect().height;
         if (element_to_move !== null && X_coordinate_slide_click !== null && Y_coordinate_slide_click !== null){
@@ -314,7 +315,7 @@ function all_slides_onslide_elements_except_drawings_pointer_events_off(){
             all_temporary_mathfield_content_render_elements.push(mathfield_content_to_render);
             renderMathInElement(mathfield_content_to_render);
             mathfield_cover.appendChild(mathfield_content_to_render);
-            (mathfield).style.display = 'none';
+            mathfield.classList.add('mathfield_hidden');
         };
     });
     all_slides.forEach((slide) =>{
@@ -332,7 +333,7 @@ function all_slides_onslide_elements_except_drawings_pointer_events_off(){
 };
 function all_slides_onslide_elements_except_drawings_pointer_events_on(){
     mathfields.forEach((mathfield) => {
-        mathfield.style.display = 'inline-block';
+        mathfield.classList.remove('mathfield_hidden');
         const mathfield_cover = mathfield.parentElement as HTMLDivElement;
         mathfield_cover.classList.remove('mathfield_cover_active_status');
         mathfield_cover.style.width = `auto`;
@@ -393,8 +394,8 @@ function add_mathfield (slide: HTMLDivElement){
         };
     });
     if (current_slide !== null){
-        const current_slide_width = current_slide.getBoundingClientRect().width - 10;
-        const current_slide_height = current_slide.getBoundingClientRect().height - 10;
+        const current_slide_width = current_slide.clientWidth;
+        const current_slide_height = current_slide.clientHeight;
         const new_mathfield_cover: HTMLDivElement = document.createElement('div');
         new_mathfield_cover.classList.add('mathfield_cover');
         new_mathfield_cover.style.position='absolute';
@@ -470,34 +471,34 @@ function textfield_insert(){
             Y_textfield = 0;
             new_textfield.style.top = `${Y_textfield}px`;
         };
-        if ((width_textfield + X_textfield) <= mouseup_slide.getBoundingClientRect().width-12){
+        if ((width_textfield + X_textfield) <= mouseup_slide.clientWidth - 2){
             if (width_textfield >= 20){
                 new_textfield.style.width = `${width_textfield}px`;
             } else {
                 new_textfield.style.width = `20px`;
             };
         }
-        if (width_textfield + X_textfield > mouseup_slide.getBoundingClientRect().width - 12){
-            if (mouseup_slide.getBoundingClientRect().width - 12 - X_textfield >= 20){
-                new_textfield.style.width = `${mouseup_slide.getBoundingClientRect().width - X_textfield-12}px`;
+        if (width_textfield + X_textfield > mouseup_slide.clientWidth - 2){
+            if (mouseup_slide.clientWidth - 2 - X_textfield >= 20){
+                new_textfield.style.width = `${mouseup_slide.clientWidth - X_textfield - 2}px`;
             } else {
                 new_textfield.style.width = `20px`;
-                new_textfield.style.left = `${mouseup_slide.getBoundingClientRect().width - 32}px`;
+                new_textfield.style.left = `${mouseup_slide.clientWidth - 22}px`;
             };
         };
-        if (height_textfield + Y_textfield <= mouseup_slide.getBoundingClientRect().height - 12){
+        if (height_textfield + Y_textfield <= mouseup_slide.clientHeight - 2){
             if (height_textfield >= 20){
             new_textfield.style.minHeight = `${height_textfield}px`;
             } else {
             new_textfield.style.minHeight = `20px`;
             };
         };
-        if (height_textfield + Y_textfield > mouseup_slide.getBoundingClientRect().height - 12){
-            if (mouseup_slide.getBoundingClientRect().height - 12 - Y_textfield >= 20){
-                new_textfield.style.minHeight = `${mouseup_slide.getBoundingClientRect().height - Y_textfield-12}px`;
+        if (height_textfield + Y_textfield > mouseup_slide.clientHeight - 2){
+            if (mouseup_slide.clientHeight - 2 - Y_textfield >= 20){
+                new_textfield.style.minHeight = `${mouseup_slide.clientHeight - Y_textfield - 2}px`;
             } else {
                 new_textfield.style.minHeight = `20px`;
-                new_textfield.style.top = `${mouseup_slide.getBoundingClientRect().height - 32}px`;
+                new_textfield.style.top = `${mouseup_slide.clientHeight - 22}px`;
             };
         };
         mousedown_slide.appendChild(new_textfield);
@@ -557,10 +558,10 @@ function resize_textfield(){
             const current_textfield = current_element as HTMLParagraphElement;
             const x_current_textfield = current_textfield.offsetLeft;
             const y_current_textfield = current_textfield.offsetTop;
-            const current_textfield_width = current_textfield.getBoundingClientRect().width - 2;
-            const current_textfield_height = current_textfield.getBoundingClientRect().height - 2;
-            const current_slide_width = current_slide.getBoundingClientRect().width - 10;
-            const current_slide_height = current_slide.getBoundingClientRect().height - 10;
+            const current_textfield_width = current_textfield.clientWidth;
+            const current_textfield_height = current_textfield.clientHeight;
+            const current_slide_width = current_slide.clientWidth;
+            const current_slide_height = current_slide.clientHeight;
             if (X_coordinate_slide_click >= x_current_textfield){
                 const new_width = X_coordinate_slide_click - x_current_textfield;
                 if (x_current_textfield + new_width <= current_slide_width - 2){
@@ -637,6 +638,7 @@ function uploaded_picture_demonstrate(picture: string){
             mathfield_insert_mode_off();
             resize_textfield_mode_off();
             textfield_insert_mode_off();
+            drawing_mode_off();
             all_slides_onslide_elements_pointer_events_off();
         };
         if (picture_insert_mode && click.isTrusted){
@@ -717,7 +719,7 @@ function insert_picture(){
                 Y_picture = 0;
                 new_picture_on_slide.style.top = `${Y_picture}px`;
             };
-            if ((width_picture + X_picture) <= mouseup_slide.getBoundingClientRect().width-10){
+            if ((width_picture + X_picture) <= mouseup_slide.clientWidth){
                 if (width_picture >= 20){
                     new_picture_on_slide.style.width = `${width_picture}px`;
                 } else {
@@ -725,35 +727,35 @@ function insert_picture(){
                     height_picture = 20 * height_to_width_ratio;
                 };
             }
-            if (width_picture + X_picture > mouseup_slide.getBoundingClientRect().width - 10){
-                if (mouseup_slide.getBoundingClientRect().width - 10 - X_picture >= 20){
-                    X_picture = mouseup_slide.getBoundingClientRect().width - X_picture-10;
+            if (width_picture + X_picture > mouseup_slide.clientWidth){
+                if (mouseup_slide.clientWidth - X_picture >= 20){
+                    X_picture = mouseup_slide.clientWidth - X_picture;
                     if (X_picture >= 0){
                         new_picture_on_slide.style.width = `${X_picture}px`;
                     } else {
                         X_picture = 0;
                         new_picture_on_slide.style.width = `${X_picture}px`;
-                        width_picture = mouseup_slide.getBoundingClientRect().width - 10;
+                        width_picture = mouseup_slide.clientWidth;
                         height_picture = width_picture * height_to_width_ratio;
                     };
                 } else {
                     new_picture_on_slide.style.width = `20px`;
-                    new_picture_on_slide.style.left = `${mouseup_slide.getBoundingClientRect().width - 30}px`;
+                    new_picture_on_slide.style.left = `${mouseup_slide.clientWidth - 20}px`;
                     height_picture = 20 * height_to_width_ratio;
                 };
             };
-            if (height_picture + Y_picture <= mouseup_slide.getBoundingClientRect().height - 10){
+            if (height_picture + Y_picture <= mouseup_slide.clientHeight){
                 new_picture_on_slide.style.height = `${height_picture}px`;
             };
-            if (height_picture + Y_picture > mouseup_slide.getBoundingClientRect().height - 10){
-                Y_picture = mouseup_slide.getBoundingClientRect().height - height_picture - 10;
+            if (height_picture + Y_picture > mouseup_slide.clientHeight){
+                Y_picture = mouseup_slide.clientHeight - height_picture;
                 if (Y_picture >= 0){
                     new_picture_on_slide.style.height = `${height_picture}px`;
                     new_picture_on_slide.style.top = `${Y_picture}px`;
                 } else {
                     Y_picture = 0;
                     new_picture_on_slide.style.top = `${Y_picture}px`;
-                    new_picture_on_slide.style.height = `${mouseup_slide.getBoundingClientRect().height - 10}px`;
+                    new_picture_on_slide.style.height = `${mouseup_slide.clientHeight}px`;
                 };
             };
         } else {
@@ -773,34 +775,34 @@ function insert_picture(){
                 Y_picture = 0;
                 new_picture_on_slide.style.top = `${Y_picture}px`;
             };
-            if ((width_picture + X_picture) <= mouseup_slide.getBoundingClientRect().width-12){
+            if ((width_picture + X_picture) <= mouseup_slide.clientWidth - 2){
                 if (width_picture >= 20){
                     new_picture_on_slide.style.width = `${width_picture}px`;
                 } else {
                     new_picture_on_slide.style.width = `20px`;
                 };
             }
-            if (width_picture + X_picture > mouseup_slide.getBoundingClientRect().width - 12){
-                if (mouseup_slide.getBoundingClientRect().width - 12 - X_picture >= 20){
-                    new_picture_on_slide.style.width = `${mouseup_slide.getBoundingClientRect().width - X_picture-12}px`;
+            if (width_picture + X_picture > mouseup_slide.clientWidth - 2){
+                if (mouseup_slide.clientWidth - 2 - X_picture >= 20){
+                    new_picture_on_slide.style.width = `${mouseup_slide.clientWidth - X_picture - 2}px`;
                 } else {
                     new_picture_on_slide.style.width = `20px`;
-                    new_picture_on_slide.style.left = `${mouseup_slide.getBoundingClientRect().width - 32}px`;
+                    new_picture_on_slide.style.left = `${mouseup_slide.clientWidth - 22}px`;
                 };
             };
-            if (height_picture + Y_picture <= mouseup_slide.getBoundingClientRect().height - 12){
+            if (height_picture + Y_picture <= mouseup_slide.clientHeight - 2){
                 if (height_picture >= 20){
                 new_picture_on_slide.style.height = `${height_picture}px`;
                 } else {
                 new_picture_on_slide.style.minHeight = `20px`;
                 };
             };
-            if (height_picture + Y_picture > mouseup_slide.getBoundingClientRect().height - 12){
-                if (mouseup_slide.getBoundingClientRect().height - 12 - Y_picture >= 20){
-                    new_picture_on_slide.style.minHeight = `${mouseup_slide.getBoundingClientRect().height - Y_picture-12}px`;
+            if (height_picture + Y_picture > mouseup_slide.clientHeight - 2){
+                if (mouseup_slide.clientHeight - 2 - Y_picture >= 20){
+                    new_picture_on_slide.style.minHeight = `${mouseup_slide.clientHeight - Y_picture-2}px`;
                 } else {
                     new_picture_on_slide.style.minHeight = `20px`;
-                    new_picture_on_slide.style.top = `${mouseup_slide.getBoundingClientRect().height - 32}px`;
+                    new_picture_on_slide.style.top = `${mouseup_slide.clientHeight - 2}px`;
                 };
             };
         };
@@ -855,9 +857,104 @@ function picture_insert_mode_on(){
         slide.addEventListener('click', insert_picture_const);
     });
 };
-// function picture_remove_from_demonstration(picture: HTMLImageElement){
-
-// }
+function resize_picture(){
+    const current_picture_to_resize = current_element as HTMLImageElement;
+    const current_slide_with_picture_to_resize = current_picture_to_resize.parentElement as HTMLDivElement;
+    const x_current_picture = current_picture_to_resize.offsetLeft;
+    const y_current_picture = current_picture_to_resize.offsetTop;
+    const current_picture_width = current_picture_to_resize.getBoundingClientRect().width;
+    const current_picture_height = current_picture_to_resize.getBoundingClientRect().height;
+    const current_slide_width = current_slide_with_picture_to_resize.clientWidth;
+    const current_slide_height = current_slide_with_picture_to_resize.clientHeight;
+    if (X_coordinate_slide_click !== null && Y_coordinate_slide_click !== null && current_element !== null && current_slide === current_slide_with_picture_to_resize){
+        let new_final_picture_X: number | null = null;
+        let new_final_picture_Y: number | null = null;
+        let new_final_picture_Width: number | null = null;
+        let new_final_picture_Height: number | null = null;
+        if (true){
+            if (X_coordinate_slide_click >= x_current_picture){
+                new_final_picture_X = x_current_picture;
+                if (X_coordinate_slide_click <= current_slide_width){
+                    new_final_picture_Width = X_coordinate_slide_click - x_current_picture;
+                } else {
+                    new_final_picture_Width = current_slide_width - x_current_picture;
+                };
+            } else {
+                if (X_coordinate_slide_click >= 0){
+                    new_final_picture_X = X_coordinate_slide_click;
+                    new_final_picture_Width = x_current_picture - X_coordinate_slide_click + current_picture_width;
+                } else {
+                    new_final_picture_X = 0;
+                    new_final_picture_Width = x_current_picture + current_picture_width;
+                };
+            }
+        }
+        if (!ctrl_key_pressed){
+            new_final_picture_Height = new_final_picture_Width! * (current_picture_to_resize.naturalHeight / current_picture_to_resize.naturalWidth);
+            if (Y_coordinate_slide_click >= y_current_picture){
+                if (new_final_picture_Height + y_current_picture <= current_slide_height){
+                    new_final_picture_Y = y_current_picture;
+                } else {
+                    if (current_slide_height - new_final_picture_Height >= 0){
+                        new_final_picture_Y = current_slide_height - new_final_picture_Height;
+                    } else {
+                        new_final_picture_Y = 0;
+                        new_final_picture_Height = current_slide_height;
+                    }
+                };
+            } else {
+                if (current_slide_height - new_final_picture_Height >= 0){
+                    if (Y_coordinate_slide_click >= 0){
+                        if (new_final_picture_Height + Y_coordinate_slide_click <= current_slide_height){
+                            new_final_picture_Y = Y_coordinate_slide_click;
+                        } else {
+                            new_final_picture_Y = current_slide_height - new_final_picture_Height;
+                        };
+                    } else {
+                        new_final_picture_Y = 0;
+                    }
+                } else {
+                    new_final_picture_Y = 0;
+                    new_final_picture_Height = current_slide_height;
+                }
+            }
+        } else {
+            if (Y_coordinate_slide_click >= y_current_picture){
+                if (Y_coordinate_slide_click <= current_slide_height){
+                    new_final_picture_Height = Y_coordinate_slide_click - y_current_picture;
+                } else {
+                    new_final_picture_Height = current_slide_height - y_current_picture;
+                };
+            } else {
+                if (Y_coordinate_slide_click >= 0){
+                    new_final_picture_Y = Y_coordinate_slide_click;
+                    new_final_picture_Height = y_current_picture - Y_coordinate_slide_click + current_picture_height;
+                } else {
+                    new_final_picture_Y = 0;
+                    new_final_picture_Height = y_current_picture + current_picture_height;
+                };
+            }
+        }
+        if (new_final_picture_X !== null && new_final_picture_Y !== null && new_final_picture_Width !== null && new_final_picture_Height !== null){
+            current_element.style.left = `${new_final_picture_X}px`;
+            current_element.style.top = `${new_final_picture_Y}px`;
+            current_element.style.width = `${new_final_picture_Width}px`;
+            current_element.style.height = `${new_final_picture_Height}px`;
+        };
+    };
+    resize_picture_mode_off();
+    all_slides_onslide_elements_pointer_events_on();
+}
+const resize_picture_const = () => {
+    resize_picture();
+};
+function resize_picture_mode_off(){
+    slide_with_to_resize_picture?.removeEventListener('click', resize_picture_const);
+    if (slide_with_to_resize_picture !== null){
+        style_default_cursor(slide_with_to_resize_picture);
+    };
+    slide_with_to_resize_picture = null;
+}
                         // Add/remove/move pictures btns functions end
                         // Drawing functions start
 function drawing_mode_on(){
@@ -1205,8 +1302,9 @@ function render_imported_data(data: any){
             all_slides.push(slide);
             imported_slide_add_listeners(slide);
             const slide_data = data.slides[slide_ID];
-            const slide_width = slide.getBoundingClientRect().width;
-            const slide_height = slide.getBoundingClientRect().height;
+            const slide_width = slide.clientWidth;
+            const slide_height = slide.clientHeight;
+            alert(slide_height);
             const base64_canvas = (slide_data.canvas.url) ? slide_data.canvas.url : null;
             const imported_slide_canvas = document.createElement('canvas');
             imported_slide_canvas.width = slide_width;
@@ -1367,6 +1465,7 @@ window.addEventListener('mouseup', (window_mouseup) =>{
         element_move_mode_off();
         textfield_insert_mode_off();
         mathfield_insert_mode_off();
+        resize_textfield_mode_off();
         all_slides_onslide_elements_pointer_events_on();
     };
     if (clicked_out_all_demonstrated_pictures && clickedOutsideAllSlides && !drawing_mode_general){
@@ -1424,6 +1523,8 @@ slide_add_btn_const.addEventListener('click', () => {
     textfield_insert_mode_off();
     mathfield_insert_mode_off();
     drawing_mode_off();
+    resize_textfield_mode_off();
+    resize_picture_mode_off();
     all_slides_onslide_elements_pointer_events_on();
     const slide = document.createElement('div');
     slide.classList.add('main_field');
@@ -1436,9 +1537,13 @@ slide_add_btn_const.addEventListener('click', () => {
 
                         // Remove slide btn start
 slide_remove_btn_const.addEventListener('click', () => {
+    drawing_mode_off();
     mathfield_insert_mode_off()
     element_move_mode_off()
     textfield_insert_mode_off()
+    resize_textfield_mode_off()
+    resize_picture_mode_off()
+    pictures_insert_mode_off()
     all_slides.forEach(slide => {
         style_not_allowed_cursor(slide)
         if (!slide_removeMode) {
@@ -1474,12 +1579,22 @@ move_element_btn_const.addEventListener('click', ()=>{
         mathfield_insert_mode_off();
         slides_removeMode_off();
         textfield_insert_mode_off();
+        pictures_insert_mode_off();
+        resize_textfield_mode_off();
+        drawing_mode_off();
+        resize_picture_mode_off();
+        slides_removeMode_off();
         move_element_btn_const.style.backgroundColor = '#858585';
     } else {
         element_to_move = null;
         element_move_mode_off();
         mathfield_insert_mode_off();
         slides_removeMode_off();
+        textfield_insert_mode_off();
+        pictures_insert_mode_off();
+        resize_textfield_mode_off();
+        drawing_mode_off();
+        resize_picture_mode_off();
         all_slides_onslide_elements_pointer_events_on();
     };
 });
@@ -1494,6 +1609,7 @@ insert_mathfield_btn.addEventListener('click', ()=>{
     resize_textfield_mode_off();
     textfield_insert_mode_off();
     drawing_mode_off();
+    resize_picture_mode_off();
     all_slides.forEach(slide =>{
         if (!insert_mode_mathfield) {
             style_crosshair_cursor(slide)
@@ -1537,6 +1653,11 @@ mathfield_remove_btn_const.addEventListener('click', ()=>{
 mathfield_move_btn_const.addEventListener('click', ()=>{
     if (!element_move_mode){
         mathfield_insert_mode_off();
+        pictures_insert_mode_off();
+        textfield_insert_mode_off();
+        resize_textfield_mode_off();
+        drawing_mode_off();
+        resize_picture_mode_off();
         slides_removeMode_off();
         all_slides_onslide_elements_pointer_events_off();
         element_to_move = current_element;
@@ -1559,6 +1680,7 @@ insert_textfield_btn_const.addEventListener('click', ()=>{
     mathfield_insert_mode_off();
     resize_textfield_mode_off();
     drawing_mode_off();
+    resize_picture_mode_off();
     all_slides_onslide_elements_pointer_events_off();
     all_slides.forEach((slide: HTMLDivElement) =>{
         if (!textfield_insert_mode) {
@@ -1598,6 +1720,13 @@ remove_textfield_btn_const.addEventListener('click', () => {
                         // Move textfield start
 move_textfield_btn_const.addEventListener('click', (event) => {
     if (!element_move_mode){
+        slides_removeMode_off();
+        pictures_insert_mode_off();
+        mathfield_insert_mode_off();
+        resize_textfield_mode_off();
+        drawing_mode_off();
+        resize_picture_mode_off();
+        textfield_insert_mode_off();
         element_to_move = current_element;
         event.stopPropagation();
         all_slides_onslide_elements_pointer_events_off();
@@ -1613,15 +1742,17 @@ move_textfield_btn_const.addEventListener('click', (event) => {
                         // Resize textfield start
 //
 resize_textfield_btn_const.addEventListener('click', (event) => {
-    const textfield_to_resize = current_element;
-    context_menu_textfield_const.style.display = 'none';
-    if (textfield_to_resize !== null){
-        event.stopPropagation();
-        all_slides_onslide_elements_pointer_events_off();
-        slide_with_to_resize_textfield = textfield_to_resize.parentElement;
-        if (slide_with_to_resize_textfield !== null){
-            style_crosshair_cursor(slide_with_to_resize_textfield);
-            slide_with_to_resize_textfield.addEventListener('click', resize_textfield);
+        if (current_element !== null && current_element instanceof HTMLParagraphElement){
+        const textfield_to_resize = current_element;
+        context_menu_textfield_const.style.display = 'none';
+        if (textfield_to_resize !== null){
+            event.stopPropagation();
+            all_slides_onslide_elements_pointer_events_off();
+            slide_with_to_resize_textfield = textfield_to_resize.parentElement as HTMLDivElement || null;
+            if (slide_with_to_resize_textfield !== null){
+                style_crosshair_cursor(slide_with_to_resize_textfield);
+                slide_with_to_resize_textfield.addEventListener('click', resize_textfield);
+            };
         };
     };
 });
@@ -1635,6 +1766,7 @@ upload_picture_button_const.addEventListener('click', () => {
     resize_textfield_mode_off();
     textfield_insert_mode_off();
     drawing_mode_off();
+    resize_picture_mode_off();
     picture_upload_input_const.click();
 });
 picture_upload_input_const.addEventListener('change', () => {
@@ -1676,9 +1808,28 @@ remove_picture_btn_const.addEventListener('click', () => {
     }
 
 });
+resize_picture_btn_const.addEventListener('click', (event) => {
+    if (current_element !== null && current_element instanceof HTMLImageElement){
+        slide_with_to_resize_picture = current_element?.parentElement as HTMLDivElement || null;
+    }
+    context_menu_picture_const.style.display = 'none';
+    if (slide_with_to_resize_picture !== null){
+        event.stopPropagation();
+        all_slides_onslide_elements_pointer_events_off();
+        style_crosshair_cursor(slide_with_to_resize_picture);
+        slide_with_to_resize_picture.addEventListener('click', resize_picture_const);
+    };
+});
                         // Picture insert btn end
                         // Drawing btn start
 activate_drawing_btn_const.addEventListener('click', () => {
+    element_move_mode_off();
+    slides_removeMode_off();
+    pictures_insert_mode_off();
+    mathfield_insert_mode_off();
+    resize_textfield_mode_off();
+    resize_picture_mode_off();
+    textfield_insert_mode_off();
     if (!drawing_mode_general){
         drawing_mode_on();
         drawing_mode_general = true;
@@ -1689,6 +1840,13 @@ activate_drawing_btn_const.addEventListener('click', () => {
     };
 });
 pencil_btn_const.addEventListener('click', () => {
+    element_move_mode_off();
+    slides_removeMode_off();
+    pictures_insert_mode_off();
+    mathfield_insert_mode_off();
+    resize_textfield_mode_off();
+    resize_picture_mode_off();
+    textfield_insert_mode_off();
     if (!pencil_mode){
         pencil_mode = true;
         eraser_mode = false;
@@ -1710,6 +1868,13 @@ pencil_btn_const.addEventListener('click', () => {
     };
 });
 eraser_btn_const.addEventListener('click', () => {
+    element_move_mode_off();
+    slides_removeMode_off();
+    pictures_insert_mode_off();
+    mathfield_insert_mode_off();
+    resize_textfield_mode_off();
+    resize_picture_mode_off();
+    textfield_insert_mode_off();
     if (!eraser_mode){
         pencil_mode = false;
         eraser_mode = true;
@@ -1731,6 +1896,13 @@ eraser_btn_const.addEventListener('click', () => {
     };
 });
 line_btn_const.addEventListener('click', () => {
+    element_move_mode_off();
+    slides_removeMode_off();
+    pictures_insert_mode_off();
+    mathfield_insert_mode_off();
+    resize_textfield_mode_off();
+    resize_picture_mode_off();
+    textfield_insert_mode_off();
     if (!line_mode){
         pencil_mode = false;
         eraser_mode = false;
@@ -1752,6 +1924,13 @@ line_btn_const.addEventListener('click', () => {
     };
 });
 line_range_input_const.addEventListener('input', () => {
+    element_move_mode_off();
+    slides_removeMode_off();
+    pictures_insert_mode_off();
+    mathfield_insert_mode_off();
+    resize_textfield_mode_off();
+    resize_picture_mode_off();
+    textfield_insert_mode_off();
     // line_size = parseInt(line_range_input_const.value);
     if (!line_mode){
         pencil_mode = false;
@@ -1767,6 +1946,13 @@ line_range_input_const.addEventListener('input', () => {
     };
 });
 pencil_range_input_const.addEventListener('input', () => {
+    element_move_mode_off();
+    slides_removeMode_off();
+    pictures_insert_mode_off();
+    mathfield_insert_mode_off();
+    resize_textfield_mode_off();
+    resize_picture_mode_off();
+    textfield_insert_mode_off();
     pencil_size = parseInt(pencil_range_input_const.value);
     if (!pencil_mode){
         pencil_mode = true;
@@ -1782,6 +1968,13 @@ pencil_range_input_const.addEventListener('input', () => {
     };
 });
 eraser_range_input_const.addEventListener('input', () => {
+    element_move_mode_off();
+    slides_removeMode_off();
+    pictures_insert_mode_off();
+    mathfield_insert_mode_off();
+    resize_textfield_mode_off();
+    resize_picture_mode_off();
+    textfield_insert_mode_off();
     eraser_size = parseInt(eraser_range_input_const.value);
     if (!eraser_mode){
         pencil_mode = false;
@@ -1799,6 +1992,13 @@ eraser_range_input_const.addEventListener('input', () => {
                         // Drawing btn end
                         // Export/import/save btns start
 export_btn_const.addEventListener('click', () => {
+    element_move_mode_off();
+    slides_removeMode_off();
+    pictures_insert_mode_off();
+    mathfield_insert_mode_off();
+    resize_textfield_mode_off();
+    resize_picture_mode_off();
+    textfield_insert_mode_off();
     export_as_pdf();
     all_slides_onslide_elements_pointer_events_on();
 });
@@ -1815,6 +2015,13 @@ save_btn_const.addEventListener('click', () => {
     export_as_json();
 });
 upload_file_btn_const.addEventListener('click', () => {
+    element_move_mode_off();
+    slides_removeMode_off();
+    pictures_insert_mode_off();
+    mathfield_insert_mode_off();
+    resize_textfield_mode_off();
+    resize_picture_mode_off();
+    textfield_insert_mode_off();
     file_upload_input_const.click();
 });
 file_upload_input_const.addEventListener('change', (event) => {
