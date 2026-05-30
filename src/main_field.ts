@@ -209,7 +209,6 @@ function new_slide_add_listeners(slide: HTMLDivElement){
     const new_canvas = document.createElement('canvas');
     new_canvas.width = slide_width;
     new_canvas.height = slide_height;
-    new_canvas.classList.add('slide_canvas');
     all_canvas_fields.push(new_canvas);
     slide.appendChild(new_canvas);
     add_free_drawing_listeners(new_canvas);
@@ -1248,6 +1247,18 @@ function render_imported_data(data: any){
         };
     };
 };
+function convert_image_url_to_base64(image: HTMLImageElement) {
+    const temporary_canvas = document.createElement('canvas');
+    const ctx = temporary_canvas.getContext('2d');
+    temporary_canvas.width = image.width;
+    temporary_canvas.height = image.height;
+    if (ctx === null){
+        return '';
+    };
+    ctx.drawImage(image, 0, 0, temporary_canvas.width, temporary_canvas.height);
+    return temporary_canvas.toDataURL();
+    temporary_canvas.remove();
+};
 function export_as_json(){
     const save_data: any = {
         slides: {}
@@ -1291,7 +1302,7 @@ function export_as_json(){
                 Y_image: parseFloat(image.style.top) || 0,
                 width_image: parseFloat(image.style.width) || 0,
                 height_image: parseFloat(image.style.height) || 0,
-                url_image: image.src || ""
+                url_image: convert_image_url_to_base64(image) || ""
             };
         });
         const canvas_on_slide = slide.querySelector('.canvas_on_slide') as HTMLCanvasElement;

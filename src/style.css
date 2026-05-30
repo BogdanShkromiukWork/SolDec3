@@ -398,6 +398,12 @@ body {
   position: absolute;
   z-index: 1;
 }
+.canvas_on_slide {
+  left: 0;
+  top: 0;
+  position: absolute;
+  z-index: 1;
+}
 .drawing_panel_grid {
   display: grid;
   width: 100%;
