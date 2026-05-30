@@ -1304,7 +1304,6 @@ function render_imported_data(data: any){
             const slide_data = data.slides[slide_ID];
             const slide_width = slide.clientWidth;
             const slide_height = slide.clientHeight;
-            alert(slide_height);
             const base64_canvas = (slide_data.canvas.url) ? slide_data.canvas.url : null;
             const imported_slide_canvas = document.createElement('canvas');
             imported_slide_canvas.width = slide_width;
