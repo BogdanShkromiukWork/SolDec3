@@ -922,8 +922,10 @@ function resize_picture(){
             if (Y_coordinate_slide_click >= y_current_picture){
                 if (Y_coordinate_slide_click <= current_slide_height){
                     new_final_picture_Height = Y_coordinate_slide_click - y_current_picture;
+                    new_final_picture_Y = y_current_picture;
                 } else {
                     new_final_picture_Height = current_slide_height - y_current_picture;
+                    new_final_picture_Y = y_current_picture;
                 };
             } else {
                 if (Y_coordinate_slide_click >= 0){
@@ -1347,8 +1349,8 @@ function render_imported_data(data: any){
 function convert_image_url_to_base64(image: HTMLImageElement) {
     const temporary_canvas = document.createElement('canvas');
     const ctx = temporary_canvas.getContext('2d');
-    temporary_canvas.width = image.width;
-    temporary_canvas.height = image.height;
+    temporary_canvas.width = image.naturalWidth;
+    temporary_canvas.height = image.naturalHeight;
     if (ctx === null){
         return '';
     };
