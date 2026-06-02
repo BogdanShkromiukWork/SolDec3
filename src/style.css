@@ -185,11 +185,29 @@ body {
   gap: 5vh;
   justify-self: flex-start;
 }
+.fields_back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  Z-index: 0;
+}
+.field_format_A4 {
+  width: 595px;
+  height: 842px;
+}
+.field_format_letter {
+  width: 612px;
+  height: 792px;
+}
 .main_field {
   z-index: 1;
   flex-shrink: 0;
-  width: 595px;
-  height: 842px;
+  /* width: calc(595px);
+  height: calc(842px); */
   background-color: white;
   border: solid 5px #BAB6B6;
   overscroll-behavior: none;
@@ -443,3 +461,17 @@ body {
   grid-row: 2;
 }
                                       /* Save import export end */
+                                      /*Formats buttons start */
+#format_btn {
+  grid-column: 4;
+  grid-row: 1;
+}
+#format_A4_btn {
+  grid-column: 4;
+  grid-row: 1;
+}
+#format_letter_btn {
+  grid-column: 4;
+  grid-row: 2;
+}
+                                      /* Format buttons end */

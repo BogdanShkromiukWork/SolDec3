@@ -21,6 +21,11 @@ const all_slides: HTMLDivElement[] = Array.from(document.querySelectorAll('.main
 let slide_removeMode = false;
 let slidesToRemove: HTMLDivElement[] = [];
 const main_field_const = document.getElementById('back_main_field') as HTMLDivElement;
+const all_fields_back: HTMLDivElement[] = [];
+let slide_format = "letter";
+const format_A4_btn_const = document.getElementById('format_A4_btn') as HTMLButtonElement;
+const format_letter_btn_const = document.getElementById('format_letter_btn') as HTMLButtonElement;
+format_letter_btn_const.style.backgroundColor = "#8585B3";
                         // Add/remove slide btns constants end
                         // Add/remove/move mathfield btns constants start
 import 'mathlive';
@@ -131,23 +136,28 @@ function control_and_style_slide_to_remove (slide: HTMLDivElement){
 function slides_remove(){
     slidesToRemove.forEach(slide => {
         Array.from(slide.children).forEach((element_on_slide) =>{
-            if (element_on_slide.firstElementChild instanceof MathfieldElement) {
-                const index_mathfield_on_deleted_slide = mathfields.indexOf(element_on_slide.firstElementChild as MathfieldElement)
-                mathfields.splice(index_mathfield_on_deleted_slide, 1);
-            };
-            if (element_on_slide instanceof HTMLParagraphElement) {
-                const index_textfield_on_deleted_slide = textfields.indexOf(element_on_slide)
-                textfields.splice(index_textfield_on_deleted_slide, 1);
-            };
-            if (element_on_slide instanceof HTMLImageElement) {
-                const index_picture_on_deleted_slide = all_pictures_on_slides.indexOf(element_on_slide)
-                all_pictures_on_slides.splice(index_picture_on_deleted_slide, 1);
-            };
-            if (element_on_slide.firstElementChild instanceof HTMLCanvasElement) {
-                const index_canvas_on_deleted_slide = all_canvas_fields.indexOf(element_on_slide.firstElementChild)
+            if (element_on_slide instanceof HTMLCanvasElement) {
+                const index_canvas_on_deleted_slide = all_canvas_fields.indexOf(element_on_slide)
                 all_canvas_fields.splice(index_canvas_on_deleted_slide, 1);
             };
-
+            if (element_on_slide instanceof HTMLDivElement && element_on_slide.classList.contains('fields_back')) {
+                const index_field_back_on_deleted_slide = all_fields_back.indexOf(element_on_slide)
+                all_fields_back.splice(index_field_back_on_deleted_slide, 1);
+                Array.from(element_on_slide.children).forEach((field_on_slide) =>{
+                    if (field_on_slide.firstElementChild instanceof MathfieldElement) {
+                        const index_mathfield_on_deleted_slide = mathfields.indexOf(field_on_slide.firstElementChild as MathfieldElement)
+                        mathfields.splice(index_mathfield_on_deleted_slide, 1);
+                    };
+                    if (field_on_slide instanceof HTMLParagraphElement) {
+                        const index_textfield_on_deleted_slide = textfields.indexOf(field_on_slide)
+                        textfields.splice(index_textfield_on_deleted_slide, 1);
+                    };
+                    if (field_on_slide instanceof HTMLImageElement) {
+                        const index_picture_on_deleted_slide = all_pictures_on_slides.indexOf(field_on_slide)
+                        all_pictures_on_slides.splice(index_picture_on_deleted_slide, 1);
+                    };
+                });
+            };
         });
         slide.remove();
         const index_all_slides_to_remove = all_slides.indexOf(slide)
@@ -174,9 +184,9 @@ function slides_removeMode_off(){
     });
 };
 function new_slide_add_listeners(slide: HTMLDivElement){
-    const slide_width = slide.getBoundingClientRect().width;
-    const slide_height = slide.getBoundingClientRect().height;
     slide.addEventListener('click', (event) =>{
+        const slide_width = slide.getBoundingClientRect().width;
+        const slide_height = slide.getBoundingClientRect().height;
         const slide_X_click = event.offsetX
         const slide_Y_click = event.offsetY
         if (slide_X_click >= -5 && slide_Y_click >= -5 && slide_X_click <= slide_width && slide_Y_click <= slide_height){
@@ -192,6 +202,8 @@ function new_slide_add_listeners(slide: HTMLDivElement){
     slide.addEventListener('mousedown', (event) =>{
         const slide_Y_mousedown = event.offsetY
         const slide_X_mousedown = event.offsetX
+        const slide_width = slide.getBoundingClientRect().width;
+        const slide_height = slide.getBoundingClientRect().height;
         if (slide_X_mousedown >= -5 && slide_Y_mousedown >= -5 && slide_X_mousedown <= slide_width && slide_Y_mousedown <= slide_height){
             X_mousedown = slide_X_mousedown
             Y_mousedown = slide_Y_mousedown
@@ -201,15 +213,21 @@ function new_slide_add_listeners(slide: HTMLDivElement){
     slide.addEventListener('mouseup', (event) =>{
         const slide_X_mouseup = event.offsetX
         const slide_Y_mouseup = event.offsetY
+        const slide_width = slide.getBoundingClientRect().width;
+        const slide_height = slide.getBoundingClientRect().height;
         if (slide_X_mouseup >= -5 && slide_Y_mouseup >= -5 && slide_X_mouseup <= slide_width && slide_Y_mouseup <= slide_height){
             X_mouseup = slide_X_mouseup
             Y_mouseup = slide_Y_mouseup
             mouseup_slide = slide;
         };
     });
+    const new_fields_back = document.createElement('div');
+    new_fields_back.classList.add('fields_back');
+    slide.appendChild(new_fields_back);
+    all_fields_back.push(new_fields_back);
     const new_canvas = document.createElement('canvas');
-    new_canvas.width = slide_width;
-    new_canvas.height = slide_height;
+    new_canvas.width = slide.clientWidth;
+    new_canvas.height = slide.clientHeight;
     all_canvas_fields.push(new_canvas);
     slide.appendChild(new_canvas);
     add_free_drawing_listeners(new_canvas);
@@ -271,7 +289,8 @@ function move_element_to(){
         };
     };
     if (current_slide !== null){
-        current_slide.appendChild(element_to_move)
+        const current_slide_fields_back = current_slide.querySelector('.fields_back');
+        current_slide_fields_back?.appendChild(element_to_move);
         element_to_move = null;
         all_slides.forEach((slide) =>{
             style_default_cursor(slide);
@@ -319,11 +338,14 @@ function all_slides_onslide_elements_except_drawings_pointer_events_off(){
         };
     });
     all_slides.forEach((slide) =>{
-        Array.from(slide.children).forEach((child: any) =>{
-            if (!(child instanceof HTMLCanvasElement)){
-                child.style.pointerEvents = 'none';
-            };
-        });
+        const fields_back = slide.querySelector('.fields_back');
+        if (fields_back !== null){
+            Array.from(fields_back.children).forEach((child: any) =>{
+                if (!(child instanceof HTMLCanvasElement)){
+                    child.style.pointerEvents = 'none';
+                };
+            });
+        };
         if (all_pictures_on_slides.length > 0){
             all_pictures_on_slides.forEach((picture: HTMLImageElement) =>{
                 picture.style.pointerEvents = 'none';
@@ -340,11 +362,14 @@ function all_slides_onslide_elements_except_drawings_pointer_events_on(){
         mathfield_cover.style.height = `auto`;
     });
     all_slides.forEach((slide) =>{
-        Array.from(slide.children).forEach((child: any) =>{
-            if (!(child instanceof HTMLCanvasElement)){
-                child.style.pointerEvents = 'auto';
-            };
-        });
+        const fields_back = slide.querySelector('.fields_back');
+        if (fields_back !== null){
+            Array.from(fields_back.children).forEach((child: any) =>{
+                if (!(child instanceof HTMLCanvasElement)){
+                    child.style.pointerEvents = 'auto';
+                };
+            });
+        };
     });
     all_temporary_mathfield_content_render_elements.forEach((element) =>{
         if (element !== null){
@@ -418,7 +443,10 @@ function add_mathfield (slide: HTMLDivElement){
             new_mathfield_cover.style.top = `0px`;
         };
         new_mathfield_cover.appendChild(new_mathfield);
-        slide.appendChild(new_mathfield_cover);
+        const fields_back = slide.querySelector('.fields_back');
+        if (fields_back !== null){
+            fields_back.appendChild(new_mathfield_cover);
+        };
         new_mathfield_cover.style.zIndex = "0";
         new_mathfield.classList.add('mathfield_default')
         new_mathfield.focus();
@@ -501,7 +529,10 @@ function textfield_insert(){
                 new_textfield.style.top = `${mouseup_slide.clientHeight - 22}px`;
             };
         };
-        mousedown_slide.appendChild(new_textfield);
+        const fields_back = mousedown_slide.querySelector('.fields_back');
+        if (fields_back !== null){
+            fields_back.appendChild(new_textfield);
+        };
         new_textfield.focus();
         new_textfield.addEventListener('click', (event: MouseEvent) =>{
             current_element = new_textfield
@@ -807,7 +838,10 @@ function insert_picture(){
             };
         };
         new_picture_on_slide.style.pointerEvents = 'none';
-        mousedown_slide.appendChild(new_picture_on_slide);
+        const fields_back_mousedown_slide = mousedown_slide.querySelector('.fields_back');
+        if (fields_back_mousedown_slide !== null){
+            fields_back_mousedown_slide.appendChild(new_picture_on_slide);
+        };
         new_picture_on_slide.style.zIndex = "0";
         all_pictures_on_slides.push(new_picture_on_slide);
         new_picture_on_slide.addEventListener('click', (event: MouseEvent) =>{
@@ -859,7 +893,7 @@ function picture_insert_mode_on(){
 };
 function resize_picture(){
     const current_picture_to_resize = current_element as HTMLImageElement;
-    const current_slide_with_picture_to_resize = current_picture_to_resize.parentElement as HTMLDivElement;
+    const current_slide_with_picture_to_resize = current_picture_to_resize.parentElement?.parentElement as HTMLDivElement;
     const x_current_picture = current_picture_to_resize.offsetLeft;
     const y_current_picture = current_picture_to_resize.offsetTop;
     const current_picture_width = current_picture_to_resize.getBoundingClientRect().width;
@@ -875,7 +909,11 @@ function resize_picture(){
             if (X_coordinate_slide_click >= x_current_picture){
                 new_final_picture_X = x_current_picture;
                 if (X_coordinate_slide_click <= current_slide_width){
-                    new_final_picture_Width = X_coordinate_slide_click - x_current_picture;
+                    if (X_coordinate_slide_click - x_current_picture >= 20){
+                        new_final_picture_Width = X_coordinate_slide_click - x_current_picture;
+                    } else {
+                        new_final_picture_Width = 20;
+                    };
                 } else {
                     new_final_picture_Width = current_slide_width - x_current_picture;
                 };
@@ -921,22 +959,46 @@ function resize_picture(){
         } else {
             if (Y_coordinate_slide_click >= y_current_picture){
                 if (Y_coordinate_slide_click <= current_slide_height){
-                    new_final_picture_Height = Y_coordinate_slide_click - y_current_picture;
-                    new_final_picture_Y = y_current_picture;
+                    if (Y_coordinate_slide_click - y_current_picture >= 20){
+                        new_final_picture_Height = Y_coordinate_slide_click - y_current_picture;
+                        new_final_picture_Y = y_current_picture;
+                    } else {
+                        if (y_current_picture + 20 <= current_slide_height){
+                            new_final_picture_Height = 20;
+                            new_final_picture_Y = y_current_picture;
+                        } else {
+                            new_final_picture_Height = 20;
+                            new_final_picture_Y = current_slide_height - 20;
+                        }
+                    }
                 } else {
-                    new_final_picture_Height = current_slide_height - y_current_picture;
-                    new_final_picture_Y = y_current_picture;
+                    if (current_slide_height - y_current_picture >= 20){
+                        new_final_picture_Height = current_slide_height - y_current_picture;
+                        new_final_picture_Y = y_current_picture;
+                    } else{
+                        new_final_picture_Height = 20;
+                        new_final_picture_Y = current_slide_height - 20;
+                    };
                 };
             } else {
                 if (Y_coordinate_slide_click >= 0){
-                    new_final_picture_Y = Y_coordinate_slide_click;
-                    new_final_picture_Height = y_current_picture - Y_coordinate_slide_click + current_picture_height;
+                    if (y_current_picture - Y_coordinate_slide_click + current_picture_height >= 20){
+                        new_final_picture_Y = Y_coordinate_slide_click;
+                        new_final_picture_Height = y_current_picture - Y_coordinate_slide_click + current_picture_height;
+                    } else {
+                        new_final_picture_Y = Y_coordinate_slide_click;
+                        new_final_picture_Height = 20;
+                    };
                 } else {
                     new_final_picture_Y = 0;
-                    new_final_picture_Height = y_current_picture + current_picture_height;
+                    if (y_current_picture + current_picture_height >= 20){
+                        new_final_picture_Height = y_current_picture + current_picture_height;
+                    } else {
+                        new_final_picture_Height = 20;
+                    };
                 };
             }
-        }
+        };
         if (new_final_picture_X !== null && new_final_picture_Y !== null && new_final_picture_Width !== null && new_final_picture_Height !== null){
             current_element.style.left = `${new_final_picture_X}px`;
             current_element.style.top = `${new_final_picture_Y}px`;
@@ -1051,9 +1113,7 @@ function drawing_mode_off(){
 
                         // Drawing functions end
                         // Export/import/save functions start
-// function save_editable_file(){
-//     const file_name = prompt("Enter file name");
-// };
+
 async function export_as_pdf(){
     all_slides_onslide_elements_pointer_events_off();
     document.fonts.ready.then(async function() {
@@ -1083,13 +1143,16 @@ async function export_as_pdf(){
         pdf.save(file_name + '.pdf');
     });
 }
-// async function save_editable_file(){
-    
-// }
 function imported_slide_add_listeners(slide: HTMLDivElement){
-    const slide_width = slide.getBoundingClientRect().width;
-    const slide_height = slide.getBoundingClientRect().height;
+    if (slide_format === "A4"){
+        slide.classList.add('field_format_A4');
+    };
+    if (slide_format === "letter"){
+        slide.classList.add('field_format_letter');
+    };
     slide.addEventListener('click', (event) =>{
+        const slide_width = slide.getBoundingClientRect().width;
+        const slide_height = slide.getBoundingClientRect().height;
         const slide_X_click = event.offsetX
         const slide_Y_click = event.offsetY
         if (slide_X_click >= -5 && slide_Y_click >= -5 && slide_X_click <= slide_width && slide_Y_click <= slide_height){
@@ -1105,6 +1168,8 @@ function imported_slide_add_listeners(slide: HTMLDivElement){
     slide.addEventListener('mousedown', (event) =>{
         const slide_Y_mousedown = event.offsetY
         const slide_X_mousedown = event.offsetX
+        const slide_width = slide.getBoundingClientRect().width;
+        const slide_height = slide.getBoundingClientRect().height;
         if (slide_X_mousedown >= -5 && slide_Y_mousedown >= -5 && slide_X_mousedown <= slide_width && slide_Y_mousedown <= slide_height){
             X_mousedown = slide_X_mousedown
             Y_mousedown = slide_Y_mousedown
@@ -1114,6 +1179,8 @@ function imported_slide_add_listeners(slide: HTMLDivElement){
     slide.addEventListener('mouseup', (event) =>{
         const slide_X_mouseup = event.offsetX
         const slide_Y_mouseup = event.offsetY
+        const slide_width = slide.getBoundingClientRect().width;
+        const slide_height = slide.getBoundingClientRect().height;
         if (slide_X_mouseup >= -5 && slide_Y_mouseup >= -5 && slide_X_mouseup <= slide_width && slide_Y_mouseup <= slide_height){
             X_mouseup = slide_X_mouseup
             Y_mouseup = slide_Y_mouseup
@@ -1217,7 +1284,7 @@ function add_listeners_imported_textfield(textfield: HTMLParagraphElement, X_tex
         textfield.contentEditable = "true";
         textfields.push(textfield);
 };
-function add_listeners_imported_mathfield(slide: HTMLDivElement, mathfield: MathfieldElement, X_mathfield: number, Y_mathfield: number, content: string){
+function add_listeners_imported_mathfield(fields_back: HTMLDivElement, mathfield: MathfieldElement, X_mathfield: number, Y_mathfield: number, content: string){
     mathfields.push(mathfield);
     mathfield.addEventListener('contextmenu', (context_menu_click: MouseEvent) => {
         context_menu_click.stopPropagation();
@@ -1248,10 +1315,11 @@ function add_listeners_imported_mathfield(slide: HTMLDivElement, mathfield: Math
     new_mathfield_cover.appendChild(mathfield);
     mathfield.value = content;
     mathfield.classList.add('mathfield_default')
-    slide.appendChild(new_mathfield_cover);
+    fields_back.appendChild(new_mathfield_cover);
 };
-function add_listeners_imported_picture(slide: HTMLDivElement, image: HTMLImageElement, X_image: number, Y_image: number, width_image: number, height_image: number, url_image: string){
+function add_listeners_imported_picture(fields_back: HTMLDivElement, image: HTMLImageElement, X_image: number, Y_image: number, width_image: number, height_image: number, url_image: string){
     image.classList.add('picture_on_slide');
+    image.style.pointerEvents = 'auto';
     image.style.position = 'absolute';
     image.style.left = `${X_image}px`;
     image.style.top = `${Y_image}px`;
@@ -1281,7 +1349,7 @@ function add_listeners_imported_picture(slide: HTMLDivElement, image: HTMLImageE
         context_menu_textfield_const.style.display = 'none';
     }, true);
     image.src = url_image;
-    slide.appendChild(image);
+    fields_back.appendChild(image);
 };
 function read_file(event: Event){
     const file = (event.target as HTMLInputElement).files?.[0];
@@ -1300,6 +1368,10 @@ function render_imported_data(data: any){
         for (const slide_ID in data.slides){
             const slide = document.createElement('div');
             slide.classList.add('main_field');
+            const new_fields_back = document.createElement('div');
+            new_fields_back.classList.add('fields_back');
+            slide.appendChild(new_fields_back);
+            all_fields_back.push(new_fields_back);
             main_field_const.appendChild(slide);
             all_slides.push(slide);
             imported_slide_add_listeners(slide);
@@ -1322,7 +1394,7 @@ function render_imported_data(data: any){
                 const textfield_content = textfield_data.content;
                 const new_textfield = document.createElement('p');
                 add_listeners_imported_textfield(new_textfield, X_textfield, Y_textfield, width_textfield, height_textfield, textfield_content);
-                slide.appendChild(new_textfield);
+                new_fields_back?.appendChild(new_textfield);
                 textfields.push(new_textfield);
             };
             for (const mathfield_ID in slide_data.mathfields){
@@ -1331,7 +1403,7 @@ function render_imported_data(data: any){
                 const Y_mathfield = mathfield_data.Y_mathfield;
                 const mathfield_content = mathfield_data.content;
                 const mathfield = document.createElement('math-field') as MathfieldElement;
-                add_listeners_imported_mathfield(slide, mathfield, X_mathfield, Y_mathfield, mathfield_content);
+                add_listeners_imported_mathfield(new_fields_back, mathfield, X_mathfield, Y_mathfield, mathfield_content);
             };
             for (const image_ID in slide_data.images){
                 const image_data = slide_data.images[image_ID];
@@ -1341,7 +1413,7 @@ function render_imported_data(data: any){
                 const height_image = image_data.height_image;
                 const url_image = image_data.url_image;
                 const imported_image = new Image();
-                add_listeners_imported_picture(slide, imported_image, X_image, Y_image, width_image, height_image, url_image);
+                add_listeners_imported_picture(new_fields_back, imported_image, X_image, Y_image, width_image, height_image, url_image);
             };
         };
     };
@@ -1372,7 +1444,8 @@ function export_as_json(){
             canvas: {}
         };
         const current_slide_data = save_data.slides[slide_ID];
-        const textfields_on_slide = slide.querySelectorAll('.textfield_on_slide') as NodeListOf<HTMLParagraphElement>;
+        const fields_back = slide.querySelector('.fields_back') as HTMLDivElement;
+        const textfields_on_slide = fields_back?.querySelectorAll('.textfield_on_slide') as NodeListOf<HTMLParagraphElement>;
         textfields_on_slide.forEach((textfield, textfield_index) =>{
             const textfield_ID = `textfield_${textfield_index+1}`;
             current_slide_data.textfields[textfield_ID] = {
@@ -1383,7 +1456,7 @@ function export_as_json(){
                 content: textfield.textContent || ""
             };
         });
-        const mathfield_covers_on_slide = slide.querySelectorAll('.mathfield_cover') as NodeListOf<HTMLDivElement>;
+        const mathfield_covers_on_slide = fields_back?.querySelectorAll('.mathfield_cover') as NodeListOf<HTMLDivElement>;
         mathfield_covers_on_slide.forEach((mathfield_cover, mathfield_index) =>{
             const mathfield_ID = `mathfield_${mathfield_index+1}`;
             const mathfield = mathfield_cover.firstElementChild as MathfieldElement;
@@ -1393,7 +1466,7 @@ function export_as_json(){
                 content: mathfield.value || ""
             };
         });
-        const images_on_slide = slide.querySelectorAll('.picture_on_slide') as NodeListOf<HTMLImageElement>;
+        const images_on_slide = fields_back?.querySelectorAll('.picture_on_slide') as NodeListOf<HTMLImageElement>;
         images_on_slide.forEach((image, image_index) =>{
             const image_ID = `image_${image_index+1}`;
             current_slide_data.images[image_ID] = {
@@ -1421,9 +1494,57 @@ function export_as_json(){
     temporary_link.click();
     document.body.removeChild(temporary_link);
     URL.revokeObjectURL(temporary_link.href);
-}
+};
 
                         // Export/import/save functions end
+                        // Format functions start
+function format_change_children_resize(){
+    all_slides.forEach((slide) =>{
+        const fields_back = slide.querySelector('.fields_back') as HTMLDivElement;
+        const canvas_on_slide = slide.querySelector('.canvas_on_slide') as HTMLCanvasElement;
+        if (fields_back !== null){
+            fields_back.style.width = slide.clientWidth + 'px';
+            fields_back.style.height = slide.clientHeight + 'px';
+        };
+        if (canvas_on_slide !== null){
+            const content = canvas_on_slide.getContext('2d');
+            const temporary_canvas = document.createElement('canvas');
+            temporary_canvas.width = canvas_on_slide.clientWidth;
+            temporary_canvas.height = canvas_on_slide.clientHeight;
+            const temporary_content = temporary_canvas.getContext('2d');
+            if (content !== null && temporary_content !== null){
+                temporary_content.drawImage(canvas_on_slide, 0, 0);
+            };
+            canvas_on_slide.width = slide.clientWidth;
+            canvas_on_slide.height = slide.clientHeight;
+            if (content !== null && temporary_content !== null){
+                content.drawImage(temporary_canvas, 0, 0);
+            };
+            temporary_canvas.remove();
+        };
+    });
+};
+function change_format(new_format: string){
+    slide_format = new_format;
+    let field_format_class = '';
+    if (slide_format === "A4"){
+        field_format_class = 'field_format_A4';
+        format_A4_btn_const.style.backgroundColor = '#858585';
+        format_letter_btn_const.style.backgroundColor = '#bababa';
+    };
+    if (slide_format === "letter"){
+        field_format_class = 'field_format_letter';
+        format_letter_btn_const.style.backgroundColor = '#858585';
+        format_A4_btn_const.style.backgroundColor = '#bababa';
+    };
+    all_slides.forEach((slide) =>{
+        slide.classList.remove('field_format_A4');
+        slide.classList.remove('field_format_letter');
+        slide.classList.add(field_format_class)
+    });
+    format_change_children_resize();
+};
+                        // Format functions end
 
 
 
@@ -1516,6 +1637,12 @@ window.addEventListener('beforeunload', (event) => {
 
                         // Add slide btn start
 all_slides.forEach(slide =>{
+    if (slide_format === "A4"){
+        slide.classList.add('field_format_A4');
+    };
+    if (slide_format === "letter"){
+        slide.classList.add('field_format_letter');
+    };
     new_slide_add_listeners(slide);
 });
 slide_add_btn_const.addEventListener('click', () => {
@@ -1529,6 +1656,12 @@ slide_add_btn_const.addEventListener('click', () => {
     all_slides_onslide_elements_pointer_events_on();
     const slide = document.createElement('div');
     slide.classList.add('main_field');
+    if (slide_format === "A4"){
+        slide.classList.add('field_format_A4');
+    };
+    if (slide_format === "letter"){
+        slide.classList.add('field_format_letter');
+    };
     main_field_const.appendChild(slide);
     all_slides.push(slide);
     new_slide_add_listeners(slide);
@@ -1749,7 +1882,7 @@ resize_textfield_btn_const.addEventListener('click', (event) => {
         if (textfield_to_resize !== null){
             event.stopPropagation();
             all_slides_onslide_elements_pointer_events_off();
-            slide_with_to_resize_textfield = textfield_to_resize.parentElement as HTMLDivElement || null;
+            slide_with_to_resize_textfield = textfield_to_resize.parentElement?.parentElement as HTMLDivElement || null;
             if (slide_with_to_resize_textfield !== null){
                 style_crosshair_cursor(slide_with_to_resize_textfield);
                 slide_with_to_resize_textfield.addEventListener('click', resize_textfield);
@@ -1811,7 +1944,7 @@ remove_picture_btn_const.addEventListener('click', () => {
 });
 resize_picture_btn_const.addEventListener('click', (event) => {
     if (current_element !== null && current_element instanceof HTMLImageElement){
-        slide_with_to_resize_picture = current_element?.parentElement as HTMLDivElement || null;
+        slide_with_to_resize_picture = current_element?.parentElement?.parentElement as HTMLDivElement || null;
     }
     context_menu_picture_const.style.display = 'none';
     if (slide_with_to_resize_picture !== null){
@@ -2003,7 +2136,6 @@ export_btn_const.addEventListener('click', () => {
     export_as_pdf();
     all_slides_onslide_elements_pointer_events_on();
 });
-                        // Export/import/save btns end
 save_btn_const.addEventListener('click', () => {
     textfield_insert_mode_off();
     mathfield_insert_mode_off();
@@ -2030,5 +2162,24 @@ file_upload_input_const.addEventListener('change', (event) => {
         slide.remove();
     });
     all_slides.length = 0;
+    all_fields_back.length = 0;
+    mathfields.length = 0;
+    textfields.length = 0;
+    all_pictures_on_slides.length = 0;
     read_file(event);
 });
+                        // Export/import/save btns end
+                        // Format change btn start
+format_A4_btn_const.addEventListener('click', () => {
+    const confirmation = confirm("Changing format may permanently delete some drawing content if it doesn't fit the new format!");
+    if (confirmation) {
+        change_format("A4");
+    };
+});
+format_letter_btn_const.addEventListener('click', () => {
+    const confirmation = confirm("Changing format may permanently delete some drawing content if it doesn't fit the new format!");
+    if (confirmation) {
+        change_format("letter");
+    };
+});
+                        // Format change btn end
