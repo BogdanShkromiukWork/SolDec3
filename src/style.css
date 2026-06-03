@@ -218,7 +218,8 @@ body {
 .contex_menu_common_btn {
   height: 3vh;
   width: 10vw;
-  background-color: FAFAFA;
+  background-color: buttonface;
+  font-size: 1.5vh;
 }
 .contex_menu_common_btn :active {
   scale: 0.98;
@@ -246,6 +247,37 @@ body {
   position: absolute;
   border: 1px solid black;
   margin: 0px;
+}
+.layer_change_grid {
+  margin: 0;
+  padding: 0;
+  height: 3vh;
+  display: grid;
+  width: 10vw;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(1, 1fr);
+  justify-items: center;
+  align-items: top;
+  background-color: buttonface;
+}
+.layer_change_title {
+  margin: 0;
+  padding: 0;
+  height: 3vh;
+  width: 7vw;
+  font-size: 2vh;
+  justify-items: center;
+  align-items: center;
+  border: none;
+  background-color: transparent;
+}
+.layer_change_input {
+  height: 3vh;
+  width: 3vw;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background-color: transparent;
 }
                                       /* Context menu end */
                                       /* Content fields start */

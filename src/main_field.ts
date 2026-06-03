@@ -13,7 +13,6 @@ let ctrl_key_pressed = false;
 const move_element_btn_const = document.getElementById('move_element_btn') as HTMLButtonElement;
                         // Context menu constants end
                         // Add/remove slide btns constants start
-// let pointer_events_onslides = true;
 const slide_controllers = new Map()
 const slide_add_btn_const = document.getElementById('slide_add_btn') as HTMLButtonElement;
 const slide_remove_btn_const = document.getElementById('slide_remove_btn') as HTMLButtonElement;
@@ -25,7 +24,7 @@ const all_fields_back: HTMLDivElement[] = [];
 let slide_format = "letter";
 const format_A4_btn_const = document.getElementById('format_A4_btn') as HTMLButtonElement;
 const format_letter_btn_const = document.getElementById('format_letter_btn') as HTMLButtonElement;
-format_letter_btn_const.style.backgroundColor = "#8585B3";
+format_letter_btn_const.style.backgroundColor = "#858583";
                         // Add/remove slide btns constants end
                         // Add/remove/move mathfield btns constants start
 import 'mathlive';
@@ -43,6 +42,7 @@ let mathfield_to_remove: MathfieldElement | null = null;
 const mathfield_move_btn_const = document.getElementById('mathfield_move_btn') as HTMLButtonElement;
 import { renderMathInElement } from 'mathlive';
 let all_temporary_mathfield_content_render_elements: HTMLDivElement[] = [];
+const mathfield_layer_input_const = document.getElementById('mathfield_layer_input') as HTMLInputElement;
                         // Add/remove/move mathfield btns constants end
                         // Add/remove/move textfield btns constants end
 const insert_textfield_btn_const = document.getElementById('insert_textfield_btn') as HTMLButtonElement;
@@ -60,6 +60,7 @@ const remove_textfield_btn_const = document.getElementById('textfield_remove_btn
 const move_textfield_btn_const = document.getElementById('textfield_move_btn') as HTMLButtonElement;
 const resize_textfield_btn_const = document.getElementById('textfield_resize_btn') as HTMLButtonElement;
 let slide_with_to_resize_textfield: HTMLDivElement | null = null;
+const textfield_layer_input_const = document.getElementById('textfield_layer_input') as HTMLInputElement;
                         // Add/remove/move textfield btns constants end
                         // Add/remove/move pictures btns constants start
 //
@@ -75,6 +76,7 @@ const remove_picture_btn_const = document.getElementById('picture_remove_btn') a
 const move_picture_btn_const = document.getElementById('picture_move_btn') as HTMLButtonElement;
 const resize_picture_btn_const = document.getElementById('picture_resize_btn') as HTMLButtonElement;
 let slide_with_to_resize_picture: HTMLDivElement | null = null;
+const picture_layer_input_const = document.getElementById('picture_layer_input') as HTMLInputElement;
                         // Add/remove/move pictures btns constants end
                         // Canvas constants start
 const all_canvas_fields: HTMLCanvasElement[] = [];
@@ -398,12 +400,14 @@ function add_mathfield (slide: HTMLDivElement){
     mathfields.push(new_mathfield)
     insert_mode_mathfield = false;
     new_mathfield.addEventListener('contextmenu', (context_menu_click: MouseEvent) => {
+        const new_mathfield_Zindex = parseInt(new_mathfield.parentElement?.style.zIndex || "0");
+        mathfield_layer_input_const.valueAsNumber = new_mathfield_Zindex;
         context_menu_click.stopPropagation();
         context_menu_click.preventDefault();
         context_menu_mathfield_const.style.display = 'flex';
         context_menu_mathfield_const.style.left = `${context_menu_click.pageX}px`;
         context_menu_mathfield_const.style.top = `${context_menu_click.pageY}px`;
-        current_element = (context_menu_click.target as HTMLElement).closest('.mathfield_cover');
+        current_element = new_mathfield.closest('.mathfield_cover');
         context_menu_textfield_const.style.display = 'none';
         context_menu_picture_const.style.display = 'none';
     });
@@ -546,6 +550,8 @@ function textfield_insert(){
             };
         });
         new_textfield.addEventListener('contextmenu', (context_menu_click) => {
+            const new_textfield_Zindex = parseInt(new_textfield?.style.zIndex || "0");
+            textfield_layer_input_const.valueAsNumber = new_textfield_Zindex;
             context_menu_click.stopPropagation();
             context_menu_click.preventDefault();
             context_menu_textfield_const.style.display = 'flex';
@@ -856,6 +862,8 @@ function insert_picture(){
             };
         });
         new_picture_on_slide.addEventListener('contextmenu', (context_menu_click) => {
+            const new_picture_Zindex = parseInt(new_picture_on_slide.style.zIndex || "0");
+            picture_layer_input_const.valueAsNumber = new_picture_Zindex;
             context_menu_click.stopPropagation();
             context_menu_click.preventDefault();
             context_menu_picture_const.style.display = 'flex';
@@ -1117,32 +1125,43 @@ function drawing_mode_off(){
 async function export_as_pdf(){
     all_slides_onslide_elements_pointer_events_off();
     document.fonts.ready.then(async function() {
-        const pdf = new jsPDF({
-            orientation: 'portrait',
-            unit: 'px',
-            format: `a4`
-        });
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        for (let i = 0; i < all_slides.length; i++){
-            const slide = all_slides[i];
-            slide.style.border = 'none';
-            const onslide_content = await html2canvas(slide, {
-                scale: 2,
-                useCORS: true,
-                logging: false,
+        let pdf: jsPDF | null = null;
+        if (slide_format === "A4"){
+            pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'px',
+                format: `a4`
             });
-            slide.style.border = '';
-            const imgData = onslide_content.toDataURL('image/jpeg', 1.0);
-            if (i > 0) {
-                pdf.addPage();
-            };
-            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+        } else if (slide_format === "letter"){
+            pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'px',
+                format: `letter`
+            });
+        };
+        if (pdf !== null){
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
+            for (let i = 0; i < all_slides.length; i++){
+                const slide = all_slides[i];
+                slide.style.border = 'none';
+                const onslide_content = await html2canvas(slide, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                });
+                slide.style.border = '';
+                const imgData = onslide_content.toDataURL('image/jpeg', 1.0);
+                if (i > 0) {
+                    pdf.addPage();
+                };
+                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+            }
+            const file_name = prompt("Enter file name") || 'export';
+            pdf.save(file_name + '.pdf');
         }
-        const file_name = prompt("Enter file name") || 'export';
-        pdf.save(file_name + '.pdf');
     });
-}
+};
 function imported_slide_add_listeners(slide: HTMLDivElement){
     if (slide_format === "A4"){
         slide.classList.add('field_format_A4');
@@ -1252,8 +1271,7 @@ function add_free_drawing_listeners_imported_canvas(canvas: HTMLCanvasElement, i
     };
     canvas.style.pointerEvents = 'none';
 };
-function add_listeners_imported_textfield(textfield: HTMLParagraphElement, X_textfield: number, Y_textfield: number, width_textfield: number, height_textfield: number, content: string){
-        textfield.style.zIndex = "0";
+function add_listeners_imported_textfield(textfield: HTMLParagraphElement, X_textfield: number, Y_textfield: number, width_textfield: number, height_textfield: number, content: string, Zindex_textfield: number){
         textfield.addEventListener('click', (event: MouseEvent) =>{
             current_element = textfield
             event.stopPropagation();
@@ -1266,6 +1284,8 @@ function add_listeners_imported_textfield(textfield: HTMLParagraphElement, X_tex
             };
         });
         textfield.addEventListener('contextmenu', (context_menu_click) => {
+            const textfield_Zindex = parseInt(textfield.style.zIndex || "0");
+            textfield_layer_input_const.valueAsNumber = textfield_Zindex;
             context_menu_click.stopPropagation();
             context_menu_click.preventDefault();
             context_menu_textfield_const.style.display = 'flex';
@@ -1282,11 +1302,14 @@ function add_listeners_imported_textfield(textfield: HTMLParagraphElement, X_tex
         textfield.textContent = content;
         textfield.classList.add('textfield_on_slide');
         textfield.contentEditable = "true";
+        textfield.style.zIndex = `${Zindex_textfield}`;
         textfields.push(textfield);
 };
-function add_listeners_imported_mathfield(fields_back: HTMLDivElement, mathfield: MathfieldElement, X_mathfield: number, Y_mathfield: number, content: string){
+function add_listeners_imported_mathfield(fields_back: HTMLDivElement, mathfield: MathfieldElement, X_mathfield: number, Y_mathfield: number, content: string, Zindex_mathfield: number){
     mathfields.push(mathfield);
     mathfield.addEventListener('contextmenu', (context_menu_click: MouseEvent) => {
+        const mathfield_Zindex = parseInt(mathfield.parentElement?.style.zIndex || "0");
+        mathfield_layer_input_const.valueAsNumber = mathfield_Zindex;
         context_menu_click.stopPropagation();
         context_menu_click.preventDefault();
         context_menu_mathfield_const.style.display = 'flex';
@@ -1313,11 +1336,12 @@ function add_listeners_imported_mathfield(fields_back: HTMLDivElement, mathfield
     new_mathfield_cover.style.left = `${X_mathfield}px`;
     new_mathfield_cover.style.top = `${Y_mathfield}px`;
     new_mathfield_cover.appendChild(mathfield);
+    new_mathfield_cover.style.zIndex = `${Zindex_mathfield}`;
     mathfield.value = content;
     mathfield.classList.add('mathfield_default')
     fields_back.appendChild(new_mathfield_cover);
 };
-function add_listeners_imported_picture(fields_back: HTMLDivElement, image: HTMLImageElement, X_image: number, Y_image: number, width_image: number, height_image: number, url_image: string){
+function add_listeners_imported_picture(fields_back: HTMLDivElement, image: HTMLImageElement, X_image: number, Y_image: number, width_image: number, height_image: number, url_image: string, Zindex_image: number){
     image.classList.add('picture_on_slide');
     image.style.pointerEvents = 'auto';
     image.style.position = 'absolute';
@@ -1325,7 +1349,7 @@ function add_listeners_imported_picture(fields_back: HTMLDivElement, image: HTML
     image.style.top = `${Y_image}px`;
     image.style.width = `${width_image}px`;
     image.style.height = `${height_image}px`;
-    image.style.zIndex = "0";
+    image.style.zIndex = `${Zindex_image}`;
     all_pictures_on_slides.push(image);
     image.addEventListener('click', (event: MouseEvent) =>{
         current_element = image
@@ -1339,6 +1363,8 @@ function add_listeners_imported_picture(fields_back: HTMLDivElement, image: HTML
         };
     });
     image.addEventListener('contextmenu', (context_menu_click) => {
+        const image_Zindex = parseInt(image.style.zIndex || "0");
+        picture_layer_input_const.valueAsNumber = image_Zindex;
         context_menu_click.stopPropagation();
         context_menu_click.preventDefault();
         context_menu_picture_const.style.display = 'flex';
@@ -1392,8 +1418,9 @@ function render_imported_data(data: any){
                 const width_textfield = textfield_data.width_textfield;
                 const height_textfield = textfield_data.height_textfield;
                 const textfield_content = textfield_data.content;
+                const textfield_Zindex = textfield_data.Zindex_textfield;
                 const new_textfield = document.createElement('p');
-                add_listeners_imported_textfield(new_textfield, X_textfield, Y_textfield, width_textfield, height_textfield, textfield_content);
+                add_listeners_imported_textfield(new_textfield, X_textfield, Y_textfield, width_textfield, height_textfield, textfield_content, textfield_Zindex);
                 new_fields_back?.appendChild(new_textfield);
                 textfields.push(new_textfield);
             };
@@ -1402,8 +1429,9 @@ function render_imported_data(data: any){
                 const X_mathfield = mathfield_data.X_mathfield;
                 const Y_mathfield = mathfield_data.Y_mathfield;
                 const mathfield_content = mathfield_data.content;
+                const mathfield_Zindex = mathfield_data.Zindex_mathfield;
                 const mathfield = document.createElement('math-field') as MathfieldElement;
-                add_listeners_imported_mathfield(new_fields_back, mathfield, X_mathfield, Y_mathfield, mathfield_content);
+                add_listeners_imported_mathfield(new_fields_back, mathfield, X_mathfield, Y_mathfield, mathfield_content, mathfield_Zindex);
             };
             for (const image_ID in slide_data.images){
                 const image_data = slide_data.images[image_ID];
@@ -1412,8 +1440,9 @@ function render_imported_data(data: any){
                 const width_image = image_data.width_image;
                 const height_image = image_data.height_image;
                 const url_image = image_data.url_image;
+                const image_Zindex = image_data.Zindex_image;
                 const imported_image = new Image();
-                add_listeners_imported_picture(new_fields_back, imported_image, X_image, Y_image, width_image, height_image, url_image);
+                add_listeners_imported_picture(new_fields_back, imported_image, X_image, Y_image, width_image, height_image, url_image, image_Zindex);
             };
         };
     };
@@ -1453,7 +1482,8 @@ function export_as_json(){
                 Y_textfield: parseFloat(textfield.style.top) || 0,
                 width_textfield: parseFloat(textfield.style.width) || 0,
                 height_textfield: parseFloat(textfield.style.minHeight) || 0,
-                content: textfield.textContent || ""
+                content: textfield.textContent || "",
+                Zindex_textfield: parseInt(textfield.style.zIndex || "0")
             };
         });
         const mathfield_covers_on_slide = fields_back?.querySelectorAll('.mathfield_cover') as NodeListOf<HTMLDivElement>;
@@ -1463,7 +1493,8 @@ function export_as_json(){
             current_slide_data.mathfields[mathfield_ID] = {
                 X_mathfield: parseFloat(mathfield_cover.style.left) || 0,
                 Y_mathfield: parseFloat(mathfield_cover.style.top) || 0,
-                content: mathfield.value || ""
+                content: mathfield.value || "",
+                Zindex_mathfield: parseInt(mathfield_cover.style.zIndex || "0")
             };
         });
         const images_on_slide = fields_back?.querySelectorAll('.picture_on_slide') as NodeListOf<HTMLImageElement>;
@@ -1474,7 +1505,8 @@ function export_as_json(){
                 Y_image: parseFloat(image.style.top) || 0,
                 width_image: parseFloat(image.style.width) || 0,
                 height_image: parseFloat(image.style.height) || 0,
-                url_image: convert_image_url_to_base64(image) || ""
+                url_image: convert_image_url_to_base64(image) || "",
+                Zindex_image: parseInt(image.style.zIndex || "0")
             };
         });
         const canvas_on_slide = slide.querySelector('.canvas_on_slide') as HTMLCanvasElement;
@@ -1764,7 +1796,7 @@ insert_mathfield_btn.addEventListener('click', ()=>{
                         // Add mathfield btn end
 
 
-                        // Remove mathfield btn start
+                        // Mathfield context menu start
 mathfield_remove_btn_const.addEventListener('click', ()=>{
     mathfield_to_remove_cover = current_element;
     mathfield_to_remove = mathfield_to_remove_cover?.firstElementChild as MathfieldElement || null;
@@ -1780,10 +1812,6 @@ mathfield_remove_btn_const.addEventListener('click', ()=>{
     alert("Hold Shift and click 'Remove' to delete the mathfield");
     };
 });
-                        // Remove mathfield btn end
-
-
-                        // Mathfield move btn start
 mathfield_move_btn_const.addEventListener('click', ()=>{
     if (!element_move_mode){
         mathfield_insert_mode_off();
@@ -1803,7 +1831,16 @@ mathfield_move_btn_const.addEventListener('click', ()=>{
     };
     context_menu_mathfield_const.style.display = 'none';
 });
-                        // Mathfield move btn end
+mathfield_layer_input_const.addEventListener('change', (changeEvent) => {
+    if (current_element !== null && current_element.classList.contains('mathfield_cover') && changeEvent.isTrusted){
+        const mathfield_cover_to_change_layer = current_element;
+        const new_layer_value = parseInt(mathfield_layer_input_const.value);
+        if (new_layer_value !== null){
+            mathfield_cover_to_change_layer.style.zIndex = new_layer_value.toString();
+        }
+    };
+});
+                        // Mathfield context menu end
 
 
                         // Add textfield start
@@ -1833,7 +1870,7 @@ insert_textfield_btn_const.addEventListener('click', ()=>{
     };
 });
                         // Add textfield end
-                        // Remove textfield start
+                        // Textfield context menu start
 remove_textfield_btn_const.addEventListener('click', () => {
     if (shift_key_pressed){
         const textfield_to_remove = current_element;
@@ -1850,8 +1887,6 @@ remove_textfield_btn_const.addEventListener('click', () => {
         };
     };
 });
-                        // Remove textfield end
-                        // Move textfield start
 move_textfield_btn_const.addEventListener('click', (event) => {
     if (!element_move_mode){
         slides_removeMode_off();
@@ -1872,9 +1907,6 @@ move_textfield_btn_const.addEventListener('click', (event) => {
     move_element_btn_const.style.backgroundColor = '#858585';
     context_menu_textfield_const.style.display = 'none';
 });
-                        // Move textfield end
-                        // Resize textfield start
-//
 resize_textfield_btn_const.addEventListener('click', (event) => {
         if (current_element !== null && current_element instanceof HTMLParagraphElement){
         const textfield_to_resize = current_element;
@@ -1890,7 +1922,16 @@ resize_textfield_btn_const.addEventListener('click', (event) => {
         };
     };
 });
-                        // Resize textfield end
+textfield_layer_input_const.addEventListener('change', (changeEvent) => {
+    if (current_element !== null && current_element.classList.contains('textfield_on_slide') && changeEvent.isTrusted){
+        const textfield_to_change_layer = current_element;
+        const new_layer_value = parseInt(textfield_layer_input_const.value);
+        if (new_layer_value !== null){
+            textfield_to_change_layer.style.zIndex = new_layer_value.toString();
+        }
+    };
+});
+                        // Textfield context menu end
                         // Picture insert btn start
 upload_picture_button_const.addEventListener('click', () => {
     element_move_mode_off();
@@ -1953,6 +1994,15 @@ resize_picture_btn_const.addEventListener('click', (event) => {
         style_crosshair_cursor(slide_with_to_resize_picture);
         slide_with_to_resize_picture.addEventListener('click', resize_picture_const);
     };
+});
+picture_layer_input_const.addEventListener('change', (changeEvent) => {
+    if (current_element !== null && current_element.classList.contains('picture_on_slide') && changeEvent.isTrusted){
+        const picture_to_change_layer = current_element;
+        const new_layer_value = parseInt(picture_layer_input_const.value);
+        if (new_layer_value !== null){
+            picture_to_change_layer.style.zIndex = new_layer_value.toString();
+        }
+    };  
 });
                         // Picture insert btn end
                         // Drawing btn start

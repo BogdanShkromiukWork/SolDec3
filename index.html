@@ -222,16 +222,28 @@
     <div id="context_menu_mathfield" class="context_menu_onslide">
       <button class="contex_menu_common_btn" id="mathfield_move_btn">move mathfield</button>
       <button class="contex_menu_common_btn" id="mathfield_remove_btn">remove mathfield</button>
+      <div class="layer_change_grid">
+        <div class="layer_change_title">layer</div>
+        <input type="number" class="layer_change_input" id="mathfield_layer_input" min="-1000" max="1000" value="0">
+      </div>
     </div>
     <div id="context_menu_textfield" class="context_menu_onslide">
       <button class="contex_menu_common_btn" id="textfield_move_btn">move textfield</button>
       <button class="contex_menu_common_btn" id="textfield_remove_btn">remove textfield</button>
       <button class="contex_menu_common_btn" id="textfield_resize_btn">resize textfield</button>
+      <div class="layer_change_grid">
+        <div class="layer_change_title">layer</div>
+        <input type="number" class="layer_change_input" id="textfield_layer_input" min="-1000" max="1000" value="0">
+      </div>
     </div>
     <div id="context_menu_picture" class="context_menu_onslide">
       <button class="contex_menu_common_btn" id="picture_move_btn">move picture</button>
       <button class="contex_menu_common_btn" id="picture_resize_btn">resize picture</button>
       <button class="contex_menu_common_btn" id="picture_remove_btn">remove picture</button>
+      <div class="layer_change_grid">
+        <div class="layer_change_title">layer</div>
+        <input type="number" class="layer_change_input" id="picture_layer_input" min="-1000" max="1000" value="0">
+      </div>
     </div>
     <input type="file" id="picture_upload_input" multiple accept="image/*" style="display: none;" />
     <input type="file" id="file_upload_input" accept="application/json" style="display: none;" />
