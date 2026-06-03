@@ -478,6 +478,11 @@ body {
   transform: rotate(180deg);
   height: 10vh;
 }
+#drawing_color_input {
+  justify-content: center;
+  width: 100%;
+  height: 5vh;
+}
                                       /* Draving panel end */
                                       /* Save import export start */
 #export_btn {

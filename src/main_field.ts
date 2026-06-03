@@ -1,6 +1,5 @@
                         // Global variables/constants start
 import html2canvas from 'html2canvas';
-// import { image } from 'html2canvas/dist/types/css/types/image';
 import jsPDF from 'jspdf';
                         // Global variables/constants end
                         // Conetxt menu constants start
@@ -96,6 +95,7 @@ const line_btn_const = document.getElementById('line_btn') as HTMLButtonElement;
 const pencil_range_input_const = document.getElementById('pencil_range_input') as HTMLInputElement;
 const eraser_range_input_const = document.getElementById('eraser_range_input') as HTMLInputElement;
 const line_range_input_const = document.getElementById('line_range_input') as HTMLInputElement;
+const drawing_color_input_const = document.getElementById('drawing_color_input') as HTMLInputElement;
                         // Canvas constants end
                         // Export/import/save constants start
 const export_btn_const = document.getElementById('export_btn') as HTMLButtonElement;
@@ -1016,7 +1016,7 @@ function resize_picture(){
     };
     resize_picture_mode_off();
     all_slides_onslide_elements_pointer_events_on();
-}
+};
 const resize_picture_const = () => {
     resize_picture();
 };
@@ -1026,7 +1026,7 @@ function resize_picture_mode_off(){
         style_default_cursor(slide_with_to_resize_picture);
     };
     slide_with_to_resize_picture = null;
-}
+};
                         // Add/remove/move pictures btns functions end
                         // Drawing functions start
 function drawing_mode_on(){
@@ -1052,6 +1052,13 @@ function add_free_drawing_listeners(canvas: HTMLCanvasElement){
         content.lineCap = 'round';
     };
     canvas.addEventListener('mousedown', (mouse_down) =>{
+        let drawing_color = drawing_color_input_const.value;
+        if (drawing_color === ''){
+            drawing_color = '#000000';
+        };
+        if (content !== null){
+            content.strokeStyle = drawing_color;
+        };
         if (content!== null && pencil_mode){
             content.globalCompositeOperation = 'source-over';
             content.lineWidth = pencil_size;
@@ -1216,6 +1223,13 @@ function add_free_drawing_listeners_imported_canvas(canvas: HTMLCanvasElement, i
         content.lineCap = 'round';
     };
     canvas.addEventListener('mousedown', (mouse_down) =>{
+        let drawing_color = drawing_color_input_const.value;
+        if (drawing_color === ''){
+            drawing_color = '#000000';
+        };
+        if (content !== null){
+            content.strokeStyle = drawing_color;
+        };
         if (content!== null && pencil_mode){
             content.globalCompositeOperation = 'source-over';
             content.lineWidth = pencil_size;
