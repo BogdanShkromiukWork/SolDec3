@@ -132,6 +132,11 @@ body {
   border: solid 5px black;
   border-radius: 10px;
   overflow: hidden;
+  white-space: nowrap;
+  display: inline-block;
+  font-size: 1em;
+  padding: 0;
+  justify-items: left;
 }
 .button_common1:active {
   background-color: #858585;

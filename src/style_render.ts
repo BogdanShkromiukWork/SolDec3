@@ -1,5 +1,6 @@
 import 'katex/dist/katex.min.css';
 import katex from 'katex';
+// import { width } from '@fortawesome/free-solid-svg-icons/fa0';
 function render_latex(latex: string, button: string) {
     const button_to_render = document.getElementById(button) as HTMLButtonElement;
     katex.render(latex, button_to_render, {
@@ -56,3 +57,21 @@ render_latex(`\\neq`, "not_equal_button")
 render_latex(`\\rightarrow`, "right_arrow_button")
 render_latex(`\\leftarrow`, "left_arrow_button")
 render_latex(`\\leftrightarrow`, "double_arrow_button")
+
+// import { library, dom } from '@fortawesome/fontawesome-svg-core';
+// import {  } from '@fortawesome/free-solid-svg-icons';
+function fix_btn_font (button_to_font_fix: HTMLButtonElement){
+    const window_height = window.innerHeight
+    const window_width = window.innerWidth
+    const H_W = 730/1536
+    const font_coeficient = 0.8*(1/(window_height/window_width/H_W))
+    button_to_font_fix.style.fontSize = `${font_coeficient}em`
+}
+function fix_all_btns (){
+    const all_common1_btns = document.querySelectorAll('.button_common1') as NodeListOf<HTMLButtonElement>
+    all_common1_btns.forEach(btn =>{
+        fix_btn_font(btn)
+    });
+};
+fix_all_btns()
+

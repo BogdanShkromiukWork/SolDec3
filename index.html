@@ -9,7 +9,7 @@
     <script type="module" src="/src/main_field.ts"></script>
     <script type="module" src="/src/math_field.ts"></script>
     <script type="module" src="/src/latex_functions_insert.ts"></script>
-    <script type="module" src="/src/latex_style_render.ts"></script>
+    <script type="module" src="/src/style_render.ts"></script>
 
     <!-- <script type="module" src="/src/test_scripts.ts"></script> -->
 
@@ -17,8 +17,6 @@
     <title>soldec3</title>
   </head>
   <body>
-
-
     <div id="left_top_control_panel_back">
       <div class="left_top_control_panel_main_grid_back">
         <div class="left_top_control_panel_main_grid">
@@ -106,78 +104,78 @@
       <div class="latex_insert_panel_back">
         <p class="latex_insert_panel_title">Sub/Superscript</p>
         <div class="latex_insert_buttons_grid">
-          <button class="button_common1 latex_insert_buttons_fontsize_3_5" id="superscript_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_3_5" id="subscript_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_3_5" id="sub_and_super_script_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_3_5" id="left_superscript_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_3_5" id="left_subscript_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_3_5" id="left_sub_and_super_script_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_3_5 functions_btn" id="superscript_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_3_5 functions_btn" id="subscript_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_3_5 functions_btn" id="sub_and_super_script_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_3_5 functions_btn" id="left_superscript_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_3_5 functions_btn" id="left_subscript_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_3_5 functions_btn" id="left_sub_and_super_script_button"></button>
         </div>
       </div>
       <div class="latex_insert_panel_back">
         <p class="latex_insert_panel_title">Radicals</p>
         <div class="latex_insert_buttons_grid">
-          <button class="button_common1 latex_insert_buttons_fontsize_3_5" id="root_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_3_5" id="root_2_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_3_5" id="root_3_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_3_5" id="root_universal_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_3_5 functions_btn" id="root_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_3_5 functions_btn" id="root_2_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_3_5 functions_btn" id="root_3_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_3_5 functions_btn" id="root_universal_button"></button>
         </div>
       </div>
       <div class="latex_insert_panel_back">
         <p class="latex_insert_panel_title">Integrals</p>
         <div class="latex_insert_buttons_grid">
-          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="undefined_integral_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="defined_integral_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="undefined_double_integral_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="undefined_triple_integral_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5 functions_btn" id="undefined_integral_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5 functions_btn" id="defined_integral_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5 functions_btn" id="undefined_double_integral_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5 functions_btn" id="undefined_triple_integral_button"></button>
         </div>
         <div class="latex_insert_buttons_grid">
-          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="undefined_surface_integral_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="defined_surface_integral_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="undefined_double_surface_integral_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5 functions_btn" id="undefined_surface_integral_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5 functions_btn" id="defined_surface_integral_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5 functions_btn" id="undefined_double_surface_integral_button"></button>
         </div>
       </div>
       <div class="latex_insert_panel_back">
         <p class="latex_insert_panel_title">Derivatives</p>
         <div class="latex_insert_buttons_grid">
-          <button class="button_common1 latex_insert_buttons_fontsize_2_4" id="d_dx_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_2_4" id="d_d_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_2_4" id="dy_dx_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_2_4" id="d2_dx2_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_2_3" id="d2_d2_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_2_4" id="d2y_dx2_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_4 functions_btn" id="d_dx_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_4 functions_btn" id="d_d_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_4 functions_btn" id="dy_dx_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_4 functions_btn" id="d2_dx2_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_3 functions_btn" id="d2_d2_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_4 functions_btn" id="d2y_dx2_button"></button>
         </div>
       </div>
       <div class="latex_insert_panel_back">
         <p class="latex_insert_panel_title">Trigonometry</p>
         <div class="latex_insert_buttons_grid">
-          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="sin_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="cos_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="tan_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="cot_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="sec_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="csc_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5 functions_btn" id="sin_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5 functions_btn" id="cos_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5 functions_btn" id="tan_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5 functions_btn" id="cot_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5 functions_btn" id="sec_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5 functions_btn" id="csc_button"></button>
         </div>
       </div>
       <div class="latex_insert_panel_back">
         <p class="latex_insert_panel_title">Trigonometry reverse</p>
         <div class="latex_insert_buttons_grid">
-          <button class="button_common1 latex_insert_buttons_fontsize_1_7" id="arcsin_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_1_7" id="arccos_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_1_7" id="arctan_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_1_7" id="arccot_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_1_7" id="arcsec_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_1_7" id="arccsc_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_1_7 functions_btn" id="arcsin_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_1_7 functions_btn" id="arccos_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_1_7 functions_btn" id="arctan_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_1_7 functions_btn" id="arccot_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_1_7 functions_btn" id="arcsec_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_1_7 functions_btn" id="arccsc_button"></button>
         </div>
       </div>
       <div class="latex_insert_panel_back">
         <p class="latex_insert_panel_title">Brackets</p>
         <div class="latex_insert_buttons_grid">
-          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="brackets_circle_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="brackets_module_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="brackets_figure_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="brackets_square_button"></button>
-          <button class="button_common1 latex_insert_buttons_fontsize_2_5" id="brackets_angle_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5 functions_btn" id="brackets_circle_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5 functions_btn" id="brackets_module_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5 functions_btn" id="brackets_figure_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5 functions_btn" id="brackets_square_button"></button>
+          <button class="button_common1 latex_insert_buttons_fontsize_2_5 functions_btn" id="brackets_angle_button"></button>
         </div>
       </div>
       <div class="latex_insert_panel_back">
